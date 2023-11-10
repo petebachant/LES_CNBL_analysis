@@ -28,6 +28,7 @@ yaw_max = np.mean(yaw[time[:]>75600],axis=0)
 yaw_max = np.max(yaw_max)
 print("Maximum yaw angle is ", yaw_max, "degrees")
 yaw_mean = np.mean(yaw[time[:]>75600])
+print(yaw_mean)
 
 #check farm area is correct
 f = h5py.File(f'/mnt/d/LES_data/{case_id}/stat_main_first_order.h5', 'r')
