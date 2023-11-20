@@ -15,3 +15,11 @@ Load conda environment
 ```
 conda activate LES_CNBL
 ```
+Calculate turbine thrust coefficients and plot figures in plots/ folder
+```
+python calculate_thrust_coefficient.py
+```
+Calculate turbine power coefficients and plot figures in plots/ folder
+```
+python calculate_power_coefficient.py
+```
