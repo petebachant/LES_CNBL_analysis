@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate as sp
 
-for h in [1000,500,300,150]:
+for h in [150]:
 
     case_id = f'H{h}-C5-G4_st'
     print(case_id)
@@ -30,17 +30,17 @@ for h in [1000,500,300,150]:
     u_profile = np.mean(u[:,:,:60],axis=(0,1))
     v = f['v']
     v_profile = np.mean(v[:,:,:60],axis=(0,1))
-    plt.plot(u_profile, 1000*z[:60], c='b')
-    plt.plot(v_profile, 1000*z[:60], c='r')
-    plt.savefig('plots/precursor_profile.png')
+    #plt.plot(u_profile, 1000*z[:60], c='b')
+    #plt.plot(v_profile, 1000*z[:60], c='r')
+    #plt.savefig('plots/precursor_profile.png')
 
     speed = np.sqrt(u_profile**2+v_profile**2)
     #angle in degrees!
     angle = 180*np.arctan(v_profile/u_profile)/np.pi
-    plt.close()
-    plt.plot(speed, 1000*z[:60], c='b')
-    plt.plot(angle, 1000*z[:60], c='r')
-    plt.savefig('plots/precursor_speed.png')
+    #plt.close()
+    #plt.plot(speed, 1000*z[:60], c='b')
+    #plt.plot(angle, 1000*z[:60], c='r')
+    #plt.savefig('plots/precursor_speed.png')
 
     #interpolate to find velocity at hub height
     f_speed = sp.interp1d(1000*z[:60], speed, fill_value="extrapolate")
@@ -50,11 +50,23 @@ for h in [1000,500,300,150]:
 
     #calculate turbine force
     aux = h5py.File(f'/mnt/d/LES_data/{case_id}/aux_files.h5', 'r')
+    print(list(aux.keys()))
     force = aux['force']
+    power = aux['power']
     time = aux['time']
+    plt.figure(1)
+    plt.plot(time[:],force[:])
+    plt.axvline(75600)
+    #plt.ylim([1e6,1.5e6])
+    plt.savefig('plots/turbine_force.png')
     force_ave = np.mean(force[time[:]>75600,:])
     print(force_ave)
+    power_ave = np.mean(power[time[:]>75600,:])
+    print(power_ave)
 
     turbine_area = (np.pi*198**2)/4
     ct = force_ave / (0.5*turbine_area*u_infty**2)
     print(ct)
+
+    cp = power_ave / (0.5*turbine_area*u_infty**3)
+    print(cp)
