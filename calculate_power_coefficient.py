@@ -1,4 +1,4 @@
-"""Calculate turbine thrust
+"""Calculate turbine power
 coefficient for large-eddy simulations
 of a single turbine
 """
@@ -8,15 +8,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate as sp
 
-#calculate thrust coefficient from actuator disc theory
+#calculate power coefficient from actuator disc theory
 ct_prime = 1.9417
-#ct_ad - thrust coefficient according to actuator disc theory
-ct_ad = 16*ct_prime / (4 + ct_prime)**2
-print(ct_ad)
+#cp_ad - power coefficient according to actuator disc theory
+cp_ad = 64*ct_prime / (4 + ct_prime)**3
+print(cp_ad)
 
-#thrust coefficient should be overpredicted due to
+#power coefficient should be overpredicted due to
 #the effect of the Gaussian filter length
-#here we calculate the overpredicted thrust coefficient 
+#here we calculate the overpredicted power coefficient 
 #of an actuator disc with ct_prime = 1.9417 according to
 #Shapiro et. al. 2019
 
@@ -30,12 +30,12 @@ M = M / np.sqrt(3*np.pi)
 M = M * ct_prime / 4
 M = M + 1
 M = M**(-1)
-#calculate uncorrected thrust coefficient
-ct_ad_overpredict = ct_ad / (M**2)
-print(ct_ad_overpredict)
+#calculate uncorrected power coefficient
+cp_ad_overpredict = cp_ad / (M**3)
+print(cp_ad_overpredict)
 
-#array to store thrust coefficient from LES
-ct_les = np.zeros(4)
+#array to store power coefficient from LES
+cp_les = np.zeros(4)
 
 #loop over different boundary layer heights
 for i, h_bl in enumerate([1000, 500, 300, 150]):
@@ -66,7 +66,7 @@ for i, h_bl in enumerate([1000, 500, 300, 150]):
     speed = np.sqrt(u_profile**2+v_profile**2)
     #interpolate to find velocity at hub height
     f_speed = sp.interp1d(1000*z[:60], speed, fill_value="extrapolate")
-    #reference velocity for thrust coefficient
+    #reference velocity for power coefficient
     u_infty = f_speed(119)
 
     #plot vertical velocity profile to check calculation of u_infty
@@ -78,48 +78,48 @@ for i, h_bl in enumerate([1000, 500, 300, 150]):
     plt.savefig(f'plots/{case_id}/u_infty.png')
     plt.close()
 
-    #calculate turbine force
+    #calculate turbine power
     #change file path below!
     aux = h5py.File(f'/mnt/d/LES_data/{case_id}/aux_files.h5', 'r')
-    force = aux['force']
+    power = aux['power']
     time = aux['time']
-    #average turbine force over last 1.5hrs of simulation
-    force_ave = np.mean(force[time[:]>75600,:])
+    #average turbine power over last 1.5hrs of simulation
+    power_ave = np.mean(power[time[:]>75600,:])
 
-    #calculate measured thrust coefficient from LES
+    #calculate measured power coefficient from LES
     turbine_area = (np.pi*198**2)/4
-    ct_les[i] = force_ave / (0.5*turbine_area*u_infty**2)
+    cp_les[i] = power_ave / (0.5*turbine_area*u_infty**3)
 
-    #check convergence of turbine force
-    plt.plot(time[:], force[:])
+    #check convergence of turbine power
+    plt.plot(time[:], power[:])
     plt.xlabel('Time (s)')
-    plt.ylabel('Turbine force per unit density (m^4/s^2)')
+    plt.ylabel('Turbine power per unit density (m^5/s^3)')
     plt.axvline(75600)
-    plt.savefig(f'plots/{case_id}/turbine_force.png')
+    plt.savefig(f'plots/{case_id}/turbine_power.png')
     plt.close()
 
-    #vary averaging period for turbine force
+    #vary averaging period for turbine power
     #array to store results
-    force_ave_period = np.zeros(1800)
+    power_ave_period = np.zeros(1800)
     for j in range(1800):
         time_indices = [x for x in range(-(j+1),0)]
-        force_ave_period[j] = np.mean(force[time_indices,:])
-    #plot turbine force against averaging period
-    plt.plot(5*np.arange(1800)+5, force_ave_period)
+        power_ave_period[j] = np.mean(power[time_indices,:])
+    #plot turbine power against averaging period
+    plt.plot(5*np.arange(1800)+5, power_ave_period)
     plt.axvline(5400)
     plt.xlabel('Averaging period (s)')
-    plt.ylabel('Turbine force per unit density (m^4/s^2)')
-    plt.savefig(f'plots/{case_id}/turbine_force_averaging_period.png')
+    plt.ylabel('Turbine power per unit density (m^5/s^3)')
+    plt.savefig(f'plots/{case_id}/turbine_power_averaging_period.png')
     plt.close()
 
 
-#plot thrust coefficients for the different cases
-plt.scatter(range(4), ct_les)
-plt.axhline(ct_ad)
-plt.axhline(ct_ad_overpredict)
+#plot power coefficients for the different cases
+plt.scatter(range(4), cp_les)
+plt.axhline(cp_ad)
+plt.axhline(cp_ad_overpredict)
 plt.xticks(range(4), ['H1000-C5-G4_st', 'H500-C5-G4_st', 'H300-C5-G4_st', 'H150-C5-G4_st'])
-plt.ylabel('Turbine thrust coefficient')
-plt.text(0, ct_ad, 'AD theory', va='bottom', ha='left')
-plt.text(3, ct_ad_overpredict-0.002, 'AD theory with overprediction (Shapiro et. al. 2019)', va='top', ha='right')
-plt.savefig('plots/thrust_ceofficient.png')
+plt.ylabel('Turbine power coefficient')
+plt.text(0, cp_ad, 'AD theory', va='bottom', ha='left')
+plt.text(3, cp_ad_overpredict-0.002, 'AD theory with overprediction (Shapiro et. al. 2019)', va='top', ha='right')
+plt.savefig('plots/power_ceofficient.png')
 
