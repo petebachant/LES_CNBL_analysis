@@ -1,0 +1,8 @@
+text.usetex : True
+font.size : 20
+font.family : serif
+font.serif: Times New Roman
+grid.linewidth : 1
+lines.linewidth : 1
+xtick.direction : in
+ytick.direction : in

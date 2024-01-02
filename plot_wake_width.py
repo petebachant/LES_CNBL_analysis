@@ -9,7 +9,9 @@ import scipy.interpolate as sp
 from scipy import stats
 from scipy.optimize import curve_fit
 
-case_id = 'H300-C8-G1'
+plt.style.use("plots/style.mplstyle")
+
+case_id = 'H1000-C5-G4'
 
 #vertical grid - use cell centered points  
 with open('/mnt/d/LES_data/zmesh','r') as file:       
@@ -139,29 +141,35 @@ for k in range(2,16):
         #vertical wake deficit
         wake_zprofile = np.mean(wake_zslice, axis=0)
         plt.figure(2)
-        plt.plot((u_prec_profile-wake_zprofile[i,:]), 1000*z[:100], c=cmap1(i))
+        plt.plot((u_prec_profile-wake_zprofile[i,:])/u_prec_hubh, 1000*z[:100], c=cmap1(i))
         plt.savefig(f'plots/{case_id}/wake_recovery_z{k}.png')
 
         #fit Gaussian function to wake deficit across turbine disk
-        popt, pcov = curve_fit(fit_func, 1000*z[4:44], u_prec_profile[4:44]-wake_zprofile[i,4:44])
+        popt, pcov = curve_fit(fit_func, 1000*z[4:44], (u_prec_profile[4:44]-wake_zprofile[i,4:44])/u_prec_hubh)
         #wake width in z direction
         sigma_z = popt[1]
         plt.plot(fit_func(1000*z[4:44], *popt), 1000*z[4:44], c='k')
-        plt.xlim([-1,8])
+        plt.xlim([-0.1,0.8])
+        plt.xlabel(r'$\frac{u_{\infty}-U}{u_{\infty,hubh}}$')
+        plt.ylabel(r'$z$ (m)')
+        plt.tight_layout()
         plt.savefig(f'plots/{case_id}/wake_recovery_z{k}.png')
 
         #spanwise wake deficit
         wake_yprofile = np.mean(wake_yslice, axis=0)
         plt.figure(3)
-        plt.plot((u_prec_hubh-wake_yprofile[i,:]), wake_span, c=cmap1(i))
+        plt.plot((u_prec_hubh-wake_yprofile[i,:])/u_prec_hubh, wake_span, c=cmap1(i))
         plt.savefig(f'plots/{case_id}/wake_recovery_y{k}.png')
 
         #fit Gaussian function to wake deficit across turbine disk
-        popt, pcov = curve_fit(fit_func, wake_span[30:50], u_prec_hubh-wake_yprofile[i,30:50])
+        popt, pcov = curve_fit(fit_func, wake_span[30:50], (u_prec_hubh-wake_yprofile[i,30:50])/u_prec_hubh)
         #wake width in y direction
         sigma_y = popt[1]
         plt.plot(fit_func(wake_span[30:50], *popt), wake_span[30:50], c='k')
-        plt.xlim([-1,8])
+        plt.xlim([-0.1,0.8])
+        plt.xlabel(r'$\frac{u_{\infty}-U}{u_{\infty,hubh}}$')
+        plt.ylabel(r'$y$ (m)')
+        plt.tight_layout()
         plt.savefig(f'plots/{case_id}/wake_recovery_y{k}.png')
 
         sigma[k-2, i] = np.sqrt(sigma_y*sigma_z)
@@ -181,7 +189,10 @@ for k in range(2,16):
     plt.close(3)
 
 plt.figure(4)
-plt.title('Average wake growth rate '+str(np.mean(wake_growth_rate)))
+plt.title(r'$k^*=$'+f"{np.mean(wake_growth_rate):.3}")
+plt.ylabel(r'$\sigma/D$')
+plt.xlabel(r'$x/D$')
+plt.tight_layout()
 plt.savefig(f'plots/{case_id}/wake_width.png')
 
 plt.figure(1)
