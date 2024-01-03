@@ -11,7 +11,7 @@ from scipy.optimize import curve_fit
 
 plt.style.use("plots/style.mplstyle")
 
-case_id = 'H1000-C5-G4'
+case_id = 'H300-C2-G1'
 
 #vertical grid - use cell centered points  
 with open('/mnt/d/LES_data/zmesh','r') as file:       
@@ -45,7 +45,7 @@ cbar.set_label(r'$u$ (m/s)')
 plt.ylim([10,20])
 plt.xlim([17.5,35])
 plt.xlabel(r'x (km)')
-plt.xlabel(r'y (km)')
+plt.ylabel(r'y (km)')
 ax.set_aspect('equal')
 plt.tight_layout()
 plt.savefig(f'plots/{case_id}/farm_area.png')
