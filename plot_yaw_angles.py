@@ -9,11 +9,12 @@ import scipy.interpolate as sp
 
 plt.style.use("plots/style.mplstyle")
 
-case_id = 'H1000-C5-G4'
+case_id = 'H150-C5-G4'
 
 aux = h5py.File(f'/mnt/d/LES_data/{case_id}/aux_files.h5', 'r')
 yaw = aux['yaw']
 time = aux['time']
+print(np.mean(np.abs(yaw[time[:]>75600,:])))
 yaw = np.mean(yaw[time[:]>75600,:],axis=0)
 
 fig, ax = plt.subplots(figsize=[6,4], dpi=300)
