@@ -16,27 +16,29 @@ import matplotlib.pyplot as plt
 #dictionary for surface shear stress from precursor simulation
 u_star0_dict = {'H1000-C5-G4': 0.275, 'H1000-C5-G4_aligned': 0.275,
                 'H500-C5-G4': 0.277, 'H500-C5-G4_aligned': 0.277,
-                'H500-C0-G0': 0.277, 'H300-C5-G4' : 0.281,
-                'H300-C2-G1': 0.280, 'H300-C8-G1': 0.281}
+                'H500-C2-G1': 0.277, 'H500-C0-G0': 0.277, 
+                'H300-C5-G4': 0.281, 'H300-C2-G1': 0.280,
+                'H300-C8-G1': 0.281, 'H150-C5-G4': 0.277}
 
 #dictionary for single turbine power
 P_infty_dict = {'H1000-C5-G4': 7.62e6, 'H1000-C5-G4_aligned': 7.62e6,
                 'H500-C5-G4': 7.90e6, 'H500-C5-G4_aligned': 7.90e6,
-                'H500-C0-G0': 7.90e6, 'H300-C5-G4' : 8.00e6,
-                'H300-C2-G1': 8.00e6, 'H300-C8-G1': 8.00e6}
+                'H500-C2-G1': 7.90e6, 'H500-C0-G0': 7.90e6, 
+                'H300-C5-G4': 8.00e6, 'H300-C2-G1': 8.00e6,
+                'H300-C8-G1': 8.00e6, 'H150-C5-G4': 7.84e6}
 
 #arrays to store results
 #farm scale loss factor
-fsl = np.ones(4)
+fsl = np.ones(8)
 #turbine scale loss factor
-tsl = np.ones(4)
+tsl = np.ones(8)
 #non-local efficiency
-eta_nl = np.ones(4)
+eta_nl = np.ones(8)
 #wake efficinecy
-eta_w = np.ones(4)
+eta_w = np.ones(8)
 
-cases = ['H1000-C5-G4', 'H1000-C5-G4_aligned',
-                'H500-C5-G4', 'H500-C5-G4_aligned']
+cases = ['H500-C2-G1', 'H500-C0-G0',
+                'H300-C5-G4', 'H300-C8-G1', 'H300-C2-G1', 'H150-C5-G4']
 
 for case_no, case_id in enumerate(cases):
 
@@ -195,12 +197,10 @@ for case_no, case_id in enumerate(cases):
     v = f['v']
 
     #create interpolating function for gridded data
-    print('Begin interpolation')
     interp_u = sp.RegularGridInterpolator((x[544:1120], y[400:1050], 1000*z[:100]), 
     u[544:1120,400:1050,:100], bounds_error=False, fill_value=None)
     interp_v = sp.RegularGridInterpolator((x[544:1120], y[400:1050], 1000*z[:100]), 
     v[544:1120,400:1050,:100], bounds_error=False, fill_value=None)
-    print('Interpolation finished')
 
     #grid to extrapolate shear stress onto
     n_x = 500
@@ -311,11 +311,11 @@ fig, ax = plt.subplots(figsize=[6,4], dpi=300)
 ax.bar(np.arange(4)-0.2, eta_w*eta_nl, width=0.2, label=r'$\eta_f$', color='k')
 ax.bar(np.arange(4), eta_w, width=0.2, label=r'$\eta_w$')
 ax.bar(np.arange(4)+0.2, eta_nl, width=0.2, label=r'$\eta_{nl}$')
-plt.xticks(np.arange(4), [r'H1000-C5-G4', r'H1000-C5-G4_aligned', r'H500-C5-G4', r'H500-C5-G4_aligned'], fontsize=10, rotation='vertical')
+plt.xticks(np.arange(4), cases, fontsize=10, rotation='vertical')
 ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5), ncols=1)
 plt.ylim([0,1.15])
 plt.xlim([-0.5,3.5])
-plt.axvline(1.5, c='k')
+#plt.axvline(1.5, c='k')
 plt.tight_layout()
 plt.savefig('plots/wake_blockage_loss.png')
 plt.close()
@@ -325,11 +325,11 @@ fig, ax = plt.subplots(figsize=[6,4], dpi=300)
 ax.bar(np.arange(4)-0.2, (1-tsl)*(1-fsl), width=0.2, label=r'$\eta_f$', color='k')
 ax.bar(np.arange(4), 1-tsl, width=0.2, label=r'$1-\Pi_T$')
 ax.bar(np.arange(4)+0.2, 1-fsl, width=0.2, label=r'$1-\Pi_F$')
-plt.xticks(np.arange(4), [r'H1000-C5-G4', r'H1000-C5-G4_aligned', r'H500-C5-G4', r'H500-C5-G4_aligned'], fontsize=10, rotation='vertical')
+plt.xticks(np.arange(4), cases, fontsize=10, rotation='vertical')
 ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5), ncols=1)
 plt.ylim([0,1.15])
 plt.xlim([-0.5,3.5])
-plt.axvline(1.5, c='k')
+#plt.axvline(1.5, c='k')
 plt.tight_layout()
 plt.savefig('plots/tsl_fsl.png')
 plt.close()
