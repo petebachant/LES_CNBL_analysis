@@ -14,19 +14,11 @@ import scipy.interpolate as sp
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
 
-#dictionary for surface shear stress from precursor simulation
-u_star0_dict = {'H1000-C5-G4': 0.275, 'H1000-C5-G4_aligned': 0.275,
-                'H500-C5-G4': 0.277, 'H500-C5-G4_aligned': 0.277,
-                'H500-C0-G0': 0.277, 'H300-C5-G4' : 0.281,
-                'H300-C2-G1': 0.280, 'H300-C8-G1': 0.281}
+#load LES data from precursor and single turbine simulations
+LES_data = np.genfromtxt('LES_data.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
-#dictionary for shear stress ratios (i.e. shear stress at 2.5H_hub / bottom shear stress)
-#In the LES simulations H_hub is 119m
-#these values are extracted from figure 3 from https://arxiv.org/abs/2306.08633
-shear_ratio_dict = {'H1000-C5-G4': 0.552, 'H1000-C5-G4_aligned': 0.552,
-                'H500-C5-G4': 0.385, 'H500-C5-G4_aligned': 0.385,
-                'H500-C0-G0': 0.385, 'H300-C5-G4' : 0.0972,
-                'H300-C2-G1': 0.0972, 'H300-C8-G1': 0.0972}
+#load csv file to store results
+loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
 #wind farm variables
 
@@ -55,19 +47,11 @@ M_shapiro = M_shapiro + 1
 M_shapiro = M_shapiro**(-1)
 ctstar = 0.88 / (M_shapiro**2)
 
-#arrays to store results
-#farm scale loss factor
-fsl = np.ones(4)
-#turbine scale loss factor
-tsl = np.zeros(4)
+for case_no in range(13,15):
 
-cases = ['H1000-C5-G4', 'H500-C5-G4',
-                'H300-C8-G1', 'H300-C2-G1']
-
-for case_no, case_id in enumerate(cases):
-
+    case_id = LES_data[case_no][0]
     print(case_id)
-    u_star0 = u_star0_dict[case_id]
+    u_star0 = LES_data[case_no][1]
 
     ##############################################
     # 1. Calculate U_F0
@@ -119,7 +103,8 @@ for case_no, case_id in enumerate(cases):
 
     array_density = np.pi/(4*5*5)
     cf0 = u_star0**2/(0.5*u_f0**2)
-    zeta = 1.18 + (2.18*h_f)/(cf0*farm_length*(1-shear_ratio_dict[case_id]))
+    shear_ratio = LES_data[case_no][3]
+    zeta = 1.18 + (2.18*h_f)/(cf0*farm_length*(1-shear_ratio))
 
     def ndfm(beta):
         lhs = ctstar*(array_density/cf0)*beta**2 + beta**2
@@ -137,26 +122,8 @@ for case_no, case_id in enumerate(cases):
     #################################
 
     #farm-scale loss factor (fsl)
-    fsl[case_no] = 1 - power_ratio_nishino
+    fsl = 1 - power_ratio_nishino
 
-    print('FSL: ', fsl[case_no])
-    print('TSL: ', tsl[case_no])
-
-
-#################################
-# 9. Plot results
-#################################
-plt.style.use("plots/style.mplstyle")
-
-fig, ax = plt.subplots(figsize=[6,4], dpi=300)
-ax.bar(np.arange(4)-0.2, (1-tsl)*(1-fsl), width=0.2, label=r'$\eta_f$', color='k')
-ax.bar(np.arange(4), 1-tsl, width=0.2, label=r'$1-\Pi_T$')
-ax.bar(np.arange(4)+0.2, 1-fsl, width=0.2, label=r'$1-\Pi_F$')
-plt.xticks(np.arange(4), cases, fontsize=10, rotation='vertical')
-ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5), ncols=1)
-plt.ylim([0,1.15])
-plt.xlim([-0.5,3.5])
-#plt.axvline(1.5, c='k')
-plt.tight_layout()
-plt.savefig('plots/tsl_fsl.png')
-plt.close()
+    print('FSL: ', fsl)
+    loss_factors[case_no][5] = fsl
+    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))

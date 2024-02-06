@@ -66,7 +66,7 @@ interp_v = sp.RegularGridInterpolator((x[544:1120], y[400:1050], 1000*z[:100]),
 print('Interpolation finished')
 
 #x positions for interpolation
-x_positions = np.linspace(16.9785e3, 33.8085e3, 1000)
+x_positions = np.linspace(17.505e3, 33.345e3, 1000)
 #create array of 3d position coordinates
 interp_positions = np.zeros((1000,3))
 #set x coordinates
@@ -77,7 +77,24 @@ interp_positions[:,1] = y_pos_turb*np.ones(1000)
 interp_positions[:,2] = 119*np.ones(1000)
 u_turbine_column = interp_u(interp_positions)
 
-plt.plot(x_positions, u_turbine_column**3)
+plt.plot(x_positions, u_turbine_column)
+plt.savefig(f'plots/{case_id}/farm_x_slice.png')
+
+#x positions for interpolation
+x_positions = np.linspace(17.505e3, 31.365e3, 8)
+#create array of 3d position coordinates
+interp_positions = np.zeros((8,3))
+#set x coordinates
+interp_positions[:,0] = x_positions
+#set y coordinates
+interp_positions[:,1] = y_pos_turb*np.ones(8)
+#set z coordinates
+interp_positions[:,2] = 119*np.ones(8)
+u_turbine_column = interp_u(interp_positions)
+
+for i in range(8):
+    plt.axvline(18e3+i*2*5*198, c='grey')
+plt.scatter(x_positions, u_turbine_column)
 plt.savefig(f'plots/{case_id}/farm_x_slice.png')
 
 #calculate U_F
@@ -93,7 +110,7 @@ yaw_mean = np.mean(yaw[time[:]>75600,:],axis=0)
 n_x = 500
 n_y = 500
 n_z = 100
-x_farm = np.linspace(17.523e3,33.363e3,n_x)
+x_farm = np.linspace(17.505e3,33.345e3,n_x)
 y_farm = np.linspace(10.050e3,19.950e3,n_y)
 z_farm = np.linspace(0,2.5*119,n_z)
 xg, yg, zg = np.meshgrid(x_farm, y_farm, z_farm)
@@ -110,5 +127,10 @@ yaw_mean_rad = np.pi*np.mean(yaw_mean)/180
 
 u_f = u*np.cos(yaw_mean_rad)+v*np.sin(yaw_mean_rad)
 
-plt.axhline(u_f**3)
+plt.axhline(u_f)
 plt.savefig(f'plots/{case_id}/farm_x_slice.png')
+
+print(np.mean(u_turbine_column))
+print(np.mean(u_turbine_column**3))
+print(u_f)
+print(u_f**3)

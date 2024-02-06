@@ -13,37 +13,17 @@ import scipy.interpolate as sp
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
 
-#dictionary for surface shear stress from precursor simulation
-u_star0_dict = {'H1000-C5-G4': 0.275, 'H1000-C5-G4_aligned': 0.275,
-                'H500-C5-G4': 0.277, 'H500-C5-G4_aligned': 0.277,
-                'H500-C2-G1': 0.277, 'H500-C0-G0': 0.277, 
-                'H300-C5-G4': 0.281, 'H300-C2-G1': 0.280,
-                'H300-C8-G1': 0.281, 'H150-C5-G4': 0.277}
+#load LES data from precursor and single turbine simulations
+LES_data = np.genfromtxt('LES_data.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
-#dictionary for single turbine power
-P_infty_dict = {'H1000-C5-G4': 7.62e6, 'H1000-C5-G4_aligned': 7.62e6,
-                'H500-C5-G4': 7.90e6, 'H500-C5-G4_aligned': 7.90e6,
-                'H500-C2-G1': 7.90e6, 'H500-C0-G0': 7.90e6, 
-                'H300-C5-G4': 8.00e6, 'H300-C2-G1': 8.00e6,
-                'H300-C8-G1': 8.00e6, 'H150-C5-G4': 7.84e6}
+#load csv file to store results
+loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
-#arrays to store results
-#farm scale loss factor
-fsl = np.ones(8)
-#turbine scale loss factor
-tsl = np.ones(8)
-#non-local efficiency
-eta_nl = np.ones(8)
-#wake efficinecy
-eta_w = np.ones(8)
+for case_no in range(13,14):
 
-cases = ['H500-C2-G1', 'H500-C0-G0',
-                'H300-C5-G4', 'H300-C8-G1', 'H300-C2-G1', 'H150-C5-G4']
-
-for case_no, case_id in enumerate(cases):
-
+    case_id = LES_data[case_no][0]
     print(case_id)
-    u_star0 = u_star0_dict[case_id]
+    u_star0 = LES_data[case_no][1]
 
     ##############################################
     # 1. Calculate M_hub from precursor simulation
@@ -129,6 +109,10 @@ for case_no, case_id in enumerate(cases):
 
     ##############################################
     # 4. Calculate U_F0
+    # i.e. calculate velocity averaged between the
+    # surface and 2.5H_hub (turbine hub height 119m)
+    # in the direction of the hub height velocity
+    # from the precursor simulation
     ##############################################
 
     #calculate hub height wind direction
@@ -166,9 +150,12 @@ for case_no, case_id in enumerate(cases):
 
     ##############################################
     # 5. Calculate U_F
+    # i.e. calculate velocity averaged between the
+    # surface and 2.5H_hub (turbine hub height 119m)
+    # in the direction of the hub height velocity
+    # from the wind farm LES 
     ##############################################
 
-    aux = h5py.File(f'/mnt/d/LES_data/{case_id}/aux_files.h5', 'r')
     #calculate average yaw angle
     #yaw in degrees
     yaw = aux['yaw']
@@ -202,11 +189,13 @@ for case_no, case_id in enumerate(cases):
     interp_v = sp.RegularGridInterpolator((x[544:1120], y[400:1050], 1000*z[:100]), 
     v[544:1120,400:1050,:100], bounds_error=False, fill_value=None)
 
-    #grid to extrapolate shear stress onto
+    #grid to interpolate velocity onto
     n_x = 500
     n_y = 500
     n_z = 100
-    x_farm = np.linspace(17.4735e3,33.3135e3,n_x)
+    #farm x coordinates (2.5D in front of first row and 2.5D behind final row)
+    x_farm = np.linspace(17.505e3,33.345e3,n_x)
+    #farm x coordinates (1.25D left of first column and 1.25D right of final column)
     y_farm = np.linspace(10.050e3,19.950e3,n_y)
     z_farm = np.linspace(0,2.5*119,n_z)
     xg, yg, zg = np.meshgrid(x_farm, y_farm, z_farm)
@@ -219,8 +208,10 @@ for case_no, case_id in enumerate(cases):
     u = np.mean(interp_u(pos))
     v = np.mean(interp_v(pos))
 
+    #convert yaw angle to radians
     yaw_mean_rad = np.pi*np.mean(yaw_mean)/180
 
+    #velocity in direction of mean turbine yaw direction
     u_f = u*np.cos(yaw_mean_rad)+v*np.sin(yaw_mean_rad)
 
     #check convergence of u_f calculation with horizontal discretisation
@@ -255,18 +246,27 @@ for case_no, case_id in enumerate(cases):
     #################################
     # 6. Calculate M and zeta
     #################################
+
+    #farm wind speed reduction factor beta
     beta = u_f/u_f0
 
+    #Momentum availability factor M, calculated assumed gamma = 2.0
     M = force_ave/(5**2 * 198**2 * u_star0**2) + beta**2
+    #Wind `extratability' factor zeta`
     zeta = (M-1)/(1-beta)
+    print('zeta: ',zeta)
 
     #################################
     # 7. Calculate C_{p,Nishino}
     #################################
 
+    #turbine rotor area / land area per turbine
     array_density = np.pi/(4*5*5)
+    #'internal' turbine thrust coefficient
     ctstar = 0.88 / (M_shapiro**2)
+    #natural surface friction coefficient
     cf0 = u_star0**2/(0.5*u_f0**2)
+    print('cf0: ', cf0)
 
     def ndfm(beta):
         lhs = ctstar*(array_density/cf0)*beta**2 + beta**2
@@ -284,52 +284,23 @@ for case_no, case_id in enumerate(cases):
     #################################
 
     #farm-scale loss factor (fsl)
-    fsl[case_no] = 1 - power_ratio_nishino
+    fsl = 1 - power_ratio_nishino
+    loss_factors[case_no][4] = fsl
 
     #turbine-scale loss factor (tsl)
-    tsl[case_no] = 1 - power_ratio_les/power_ratio_nishino
+    tsl = 1 - power_ratio_les/power_ratio_nishino
+    loss_factors[case_no][3] = tsl
 
-    print('FSL: ', fsl[case_no])
-    print('TSL: ', tsl[case_no])
+    print('FSL: ', loss_factors[case_no][4])
+    print('TSL: ', loss_factors[case_no][3])
 
     #non local efficiency
-    eta_nl[case_no] = P_1 / P_infty_dict[case_id]
+    P_infty = LES_data[case_no][2]
+    loss_factors[case_no][2] = P_1 / P_infty
     #wake efficiency
-    eta_w[case_no] = P_les / P_1
+    loss_factors[case_no][1] = P_les / P_1
 
-    print('eta_nl: ', eta_nl[case_no])
-    print('eta_w: ', eta_w[case_no])
+    print('eta_nl: ', loss_factors[case_no][2])
+    print('eta_w: ', loss_factors[case_no][1])
 
-
-#################################
-# 9. Plot results
-#################################
-plt.style.use("plots/style.mplstyle")
-
-fig, ax = plt.subplots(figsize=[6,4], dpi=300)
-
-ax.bar(np.arange(4)-0.2, eta_w*eta_nl, width=0.2, label=r'$\eta_f$', color='k')
-ax.bar(np.arange(4), eta_w, width=0.2, label=r'$\eta_w$')
-ax.bar(np.arange(4)+0.2, eta_nl, width=0.2, label=r'$\eta_{nl}$')
-plt.xticks(np.arange(4), cases, fontsize=10, rotation='vertical')
-ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5), ncols=1)
-plt.ylim([0,1.15])
-plt.xlim([-0.5,3.5])
-#plt.axvline(1.5, c='k')
-plt.tight_layout()
-plt.savefig('plots/wake_blockage_loss.png')
-plt.close()
-
-
-fig, ax = plt.subplots(figsize=[6,4], dpi=300)
-ax.bar(np.arange(4)-0.2, (1-tsl)*(1-fsl), width=0.2, label=r'$\eta_f$', color='k')
-ax.bar(np.arange(4), 1-tsl, width=0.2, label=r'$1-\Pi_T$')
-ax.bar(np.arange(4)+0.2, 1-fsl, width=0.2, label=r'$1-\Pi_F$')
-plt.xticks(np.arange(4), cases, fontsize=10, rotation='vertical')
-ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5), ncols=1)
-plt.ylim([0,1.15])
-plt.xlim([-0.5,3.5])
-#plt.axvline(1.5, c='k')
-plt.tight_layout()
-plt.savefig('plots/tsl_fsl.png')
-plt.close()
+    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))
