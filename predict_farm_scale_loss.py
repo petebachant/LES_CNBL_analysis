@@ -19,6 +19,9 @@ from sklearn.linear_model import LinearRegression
 #load csv file to store results
 loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
+#path to wind farm LES data
+path = '/mnt/e/LES_data/'
+
 #wind farm variables
 
 #lambda - array density
@@ -46,7 +49,7 @@ M_shapiro = M_shapiro + 1
 M_shapiro = M_shapiro**(-1)
 ctstar = 0.88 / (M_shapiro**2)
 
-for case_no in range(50):
+for case_no in range(23,24):
 
     case_id = loss_factors[case_no][0]
     print(case_id)
@@ -56,7 +59,7 @@ for case_no in range(50):
     ##############################################
 
     #open precursor file
-    f = h5py.File(f'/mnt/e/LES_data/{case_id}/stat_precursor_first_order.h5', 'r')
+    f = h5py.File(f'{path}{case_id}/stat_precursor_first_order.h5', 'r')
     u = f['u']
     v = f['v']
 
@@ -65,7 +68,7 @@ for case_no in range(50):
     v = np.mean(v[:,:,:100], axis=(0,1))
 
     #vertical grid - use cell centered points  
-    with open('/mnt/e/LES_data/zmesh','r') as file:       
+    with open(f'{path}zmesh','r') as file:       
         Nz_full     = int(float(file.readline()))   
         N_line = Nz_full+1
         line = N_line*[0]
@@ -101,10 +104,10 @@ for case_no in range(50):
     #################################
 
     #open shear stress file
-    f = h5py.File(f'/mnt/e/LES_data/{case_id}/stat_precursor_second_order.h5', 'r')
+    f = h5py.File(f'{path}{case_id}/stat_precursor_second_order.h5', 'r')
     uw = f['uw']
     #open sub-grid shear stress file
-    f = h5py.File(f'/mnt/e/LES_data/{case_id}/stat_precursor_second_order_sgs.h5', 'r')
+    f = h5py.File(f'{path}{case_id}/stat_precursor_second_order_sgs.h5', 'r')
     uw_sgs = f['uw_sgs']
 
     uw_profile = np.mean(uw[:,:,:100]+uw_sgs[:,:,:100],axis=(0,1))

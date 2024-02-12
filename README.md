@@ -15,7 +15,7 @@ Load conda environment
 ```
 conda activate LES_CNBL
 ```
-Predict farm-scale loss factors for wind farms
+Predict farm-scale loss factors for wind farms (change `path' variable on line 23!)
 ```
 python predict_farm_scale_loss.py
 ```
