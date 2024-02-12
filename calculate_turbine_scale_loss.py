@@ -19,7 +19,7 @@ LES_data = np.genfromtxt('LES_data.csv', delimiter=',', dtype=None, names=True, 
 #load csv file to store results
 loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
-for case_no in range(13,14):
+for case_no in range(17,40):
 
     case_id = LES_data[case_no][0]
     print(case_id)
