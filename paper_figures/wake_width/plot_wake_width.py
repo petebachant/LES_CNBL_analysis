@@ -1,7 +1,3 @@
-"""Plot wake recovery
-in wind farm LES
-"""
-
 import h5py
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,13 +5,17 @@ import scipy.interpolate as sp
 from scipy import stats
 from scipy.optimize import curve_fit
 
-plt.style.use("plots/style.mplstyle")
+#path variable to change
+path = '/mnt/e/LES_data/'
 
-#load csv file to store results
-loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
+plt.style.use("../style.mplstyle")
+
+textwidth = 7
+golden_ratio = 1.61803
+fig, ax = plt.subplots(ncols=2, figsize=[textwidth,textwidth/(2*golden_ratio)], dpi=300)
 
 #vertical grid - use cell centered points  
-with open('/mnt/e/LES_data/zmesh','r') as file:       
+with open(f'{path}zmesh','r') as file:       
     Nz_full     = int(float(file.readline()))   
     N_line = Nz_full+1
     line = N_line*[0]
@@ -32,23 +32,21 @@ y = 21.74*np.arange(1380)
 #create meshgrid
 xg, yg ,zg = np.meshgrid(x, y, z, indexing='ij', sparse=True)
 
-for case_no in range(15,30):
-
-    case_id = loss_factors[case_no][0]
+for plot_no, case_id in enumerate(['H300-C2-G1','H300-C8-G1']):
 
     #load u data
-    f = h5py.File(f'/mnt/e/LES_data/{case_id}/stat_main_first_order.h5', 'r')
+    f = h5py.File(f'{path}{case_id}/stat_main_first_order.h5', 'r')
     u = f['u']
     v = f['v']
 
     #load auxiliary data
-    aux = h5py.File(f'/mnt/e/LES_data/{case_id}/aux_files.h5', 'r')
+    aux = h5py.File(f'{path}{case_id}/aux_files.h5', 'r')
     yaw = aux['yaw']
     time = aux['time']
     yaw = np.mean(yaw[time[:]>75600,:],axis=0)
 
     #load precursor data
-    f = h5py.File(f'/mnt/e/LES_data/{case_id}/stat_precursor_first_order.h5', 'r')
+    f = h5py.File(f'{path}{case_id}/stat_precursor_first_order.h5', 'r')
     u_precursor = f['u']
     u_prec_profile = np.mean(u_precursor[:,:,:100],axis=(0,1))
     interp_u_prec = sp.interp1d(1000*z[:100], u_prec_profile)
@@ -79,8 +77,7 @@ for case_no in range(15,30):
     wake_growth_rate = np.zeros(14)
 
     #define colormap
-    cmap1 = plt.get_cmap('viridis', 8)
-    cmap2 = plt.get_cmap('viridis', 14)
+    cmap2 = plt.get_cmap('plasma', 14)
 
     #loop over turbine rows
     for k in range(2,16):
@@ -128,61 +125,42 @@ for case_no in range(15,30):
 
             #vertical wake deficit
             wake_zprofile = np.mean(wake_zslice, axis=0)
-            plt.figure(2)
-            plt.plot((u_prec_profile-wake_zprofile[i,:])/u_prec_hubh, 1000*z[:100], c=cmap1(i))
-            plt.savefig(f'plots/{case_id}/wake_recovery_z{k}.png')
 
             #fit Gaussian function to wake deficit across turbine disk
             popt, pcov = curve_fit(fit_func, 1000*z[4:44], (u_prec_profile[4:44]-wake_zprofile[i,4:44])/u_prec_hubh)
             #wake width in z direction
             sigma_z = popt[1]
-            plt.plot(fit_func(1000*z[4:44], *popt), 1000*z[4:44], c='k')
-            plt.xlim([-0.1,0.8])
-            plt.xlabel(r'$\frac{u_{\infty}-U}{u_{\infty,hubh}}$')
-            plt.ylabel(r'$z$ (m)')
-            plt.tight_layout()
-            plt.savefig(f'plots/{case_id}/wake_recovery_z{k}.png')
 
             #spanwise wake deficit
             wake_yprofile = np.mean(wake_yslice, axis=0)
-            plt.figure(3)
-            plt.plot((u_prec_hubh-wake_yprofile[i,:])/u_prec_hubh, wake_span, c=cmap1(i))
-            plt.savefig(f'plots/{case_id}/wake_recovery_y{k}.png')
 
             #fit Gaussian function to wake deficit across turbine disk
             popt, pcov = curve_fit(fit_func, wake_span[30:50], (u_prec_hubh-wake_yprofile[i,30:50])/u_prec_hubh)
             #wake width in y direction
             sigma_y = popt[1]
-            plt.plot(fit_func(wake_span[30:50], *popt), wake_span[30:50], c='k')
-            plt.xlim([-0.1,0.8])
-            plt.xlabel(r'$\frac{u_{\infty}-U}{u_{\infty,hubh}}$')
-            plt.ylabel(r'$y$ (m)')
-            plt.tight_layout()
-            plt.savefig(f'plots/{case_id}/wake_recovery_y{k}.png')
 
             sigma[k-2, i] = np.sqrt(sigma_y*sigma_z)
-            plt.figure(4)
-            plt.scatter(wake_distance[i], sigma[k-2, i], c=cmap2(k-2))
-            plt.savefig(f'plots/{case_id}/wake_width.png')
+            ax[plot_no].scatter(wake_distance[i], sigma[k-2, i], c=cmap2(k-2), marker='x')
 
         linreg = stats.linregress(wake_distance, sigma[k-2,:])
+        print(linreg.slope)
         wake_growth_rate[k-2] = linreg.slope
-        plt.figure(4)
-        plt.ylim([0.4,1.4])
-        plt.plot(wake_distance, linreg.slope*wake_distance + linreg.intercept, c=cmap2(k-2))
-        plt.savefig(f'plots/{case_id}/wake_width.png')
-        
-        plt.close(2)
-        plt.close(3)
 
-    loss_factors[case_no][6] = np.mean(wake_growth_rate)
-    print(loss_factors[case_no][6])
-    plt.figure(4)
-    plt.title(r'$k^*=$'+f"{np.mean(wake_growth_rate):.3}")
-    plt.ylabel(r'$\sigma/D$')
-    plt.xlabel(r'$x/D$')
-    plt.tight_layout()
-    plt.savefig(f'plots/{case_id}/wake_width.png')
-    plt.close(4)
+    ax[plot_no].set_ylim([0.4,1.4])
+    ax[plot_no].text(2.2,1.3,rf'$k^*={round(np.mean(wake_growth_rate),4)}$', ha='left', va='center')
 
-    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))
+ax[0].set_title(r'(A) H300-C2-G1 $\eta_w=50\%$', loc='left')
+ax[1].set_title(r'(B) H300-C8-G1 $\eta_w=100\%$', loc='left')
+ax[0].set_ylabel(r'$\sigma/D$')
+ax[0].set_xlabel(r'$x/D$')
+ax[1].set_xlabel(r'$x/D$')
+
+plt.tight_layout()
+
+sm = plt.cm.ScalarMappable(cmap=cmap2, norm=plt.Normalize(vmin=3, vmax=16))
+cbar2 = fig.colorbar(sm, ax=ax, ticks=np.linspace(3.5,15.5,14))
+cbar2.set_ticklabels(np.arange(3,17,1))
+cbar2.set_label(r'Turbine row number')
+
+plt.savefig('KirbyFig8.png', bbox_inches='tight')
+plt.savefig('fig8.pdf', bbox_inches='tight')

@@ -161,4 +161,4 @@ for case_no in range(30):
 
     print('FSL: ', fsl)
     loss_factors[case_no][5] = fsl
-    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))
+    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))

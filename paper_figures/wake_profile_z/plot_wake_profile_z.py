@@ -15,6 +15,9 @@ textwidth = 7
 golden_ratio = 1.61803
 fig, ax = plt.subplots(ncols=2, nrows=2, figsize=[textwidth,textwidth/(golden_ratio)], dpi=300)
 
+patch = mpl.patches.Rectangle((0,0.17647), 0.8, 1, color='grey', alpha=0.2)
+ax[0,1].add_patch(patch)
+
 #vertical grid - use cell centered points  
 with open(f'{path}zmesh','r') as file:       
     Nz_full     = int(float(file.readline()))   
@@ -78,8 +81,7 @@ def fit_func(z,a,b,c):
 
 #arrays to store results
 wake_distance = np.linspace(2,9,8)
-wake_span = np.linspace(-2*198, 2*198, 80)
-wake_yslice = np.zeros((10,8,80))
+wake_zslice = np.zeros((10,8,100))
 
 cmap1 = plt.get_cmap('cividis', 8)
 #turbine row number
@@ -91,33 +93,28 @@ for i, distance in enumerate(wake_distance):
     #loop over turbine column
     for j in range(10):
 
-        #loop across spanwise position
-        for y_index in range(80):
+        #loop over vertical column
+        for z_index in range(100):
 
-            x_pos = x_pos_turb + distance*198*np.cos(np.pi*yaw[j+k*10]/180) + 5*198*k - \
-                wake_span[y_index]*np.sin(np.pi*yaw[j+k*10]/180)
+            x_pos = x_pos_turb + distance*198*np.cos(np.pi*yaw[j+k*10]/180) + 5*198*k
             #staggered alternate rows
             if k%2 == 0:
-                y_pos = y_pos_turb + distance*198*np.sin(np.pi*yaw[j+k*10]/180) + 5*198*j + \
-                wake_span[y_index]*np.cos(np.pi*yaw[j+k*10]/180)
+                y_pos = y_pos_turb + distance*198*np.sin(np.pi*yaw[j+k*10]/180) + 5*198*j
             else:
-                y_pos = y_pos_turb + distance*198*np.sin(np.pi*yaw[j+k*10]/180) + 5*198*j + 2.5*198 +\
-                wake_span[y_index]*np.cos(np.pi*yaw[j+k*10]/180)
+                y_pos = y_pos_turb + distance*198*np.sin(np.pi*yaw[j+k*10]/180) + 5*198*j + 2.5*198
 
-            pos = np.array([x_pos, y_pos, 119])
+            pos = np.array([x_pos, y_pos, 1000*z[z_index]])
             u_min = interp_u(pos)
             v_min = interp_v(pos)
 
-            wake_yslice[j, i, y_index] = u_min*np.cos(np.pi*yaw[j+k*10]/180) + v_min*np.sin(np.pi*yaw[j+k*10]/180)
+            wake_zslice[j, i, z_index] = u_min*np.cos(np.pi*yaw[j+k*10]/180) + v_min*np.sin(np.pi*yaw[j+k*10]/180)
 
-    mean_wake_profile = np.mean(wake_yslice,axis=0)
-    ax[0,1].plot((u_prec_hubh-mean_wake_profile[i,:])/u_prec_hubh, wake_span/198, c=cmap1(i))
+    mean_wake_profile = np.mean(wake_zslice,axis=0)
+    ax[0,1].plot((u_prec_profile-mean_wake_profile[i,:])/u_prec_hubh, 1000*z[:100]/198, c=cmap1(i))
 
 ax[0,1].set_xlim([0,0.8])
-ax[0,1].set_ylim([-1,1])
-ax[0,1].set_ylabel(r'$y/D$')
-patch = mpl.patches.Rectangle((0,-0.5), 0.8, 1, color='grey', alpha=0.2)
-ax[0,1].add_patch(patch)
+ax[0,1].set_ylim([0,2])
+ax[0,1].set_ylabel(r'$z/D$')
 
 #load precursor data
 f = h5py.File(f'{path}H300-C8-G1/stat_precursor_first_order.h5', 'r')
@@ -139,6 +136,9 @@ yaw = aux['yaw']
 time = aux['time']
 yaw = np.mean(yaw[time[:]>75600,:],axis=0)
 
+patch = mpl.patches.Rectangle((0,0.17647), 0.8, 1, color='grey', alpha=0.2)
+ax[1,1].add_patch(patch)
+
 pcm = ax[1,0].pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
                     shading='nearest', vmin=2, vmax=10, rasterized=True)
 ax[1,0].set_xlim([15,35])
@@ -159,8 +159,7 @@ print('Interpolation finished')
 
 #arrays to store results
 wake_distance = np.linspace(2,9,8)
-wake_span = np.linspace(-2*198, 2*198, 80)
-wake_yslice = np.zeros((10,8,80))
+wake_zslice = np.zeros((10,8,100))
 
 cmap1 = plt.get_cmap('cividis', 8)
 #turbine row number
@@ -172,34 +171,29 @@ for i, distance in enumerate(wake_distance):
     #loop over turbine column
     for j in range(10):
 
-        #loop across spanwise position
-        for y_index in range(80):
+        #loop over vertical column
+        for z_index in range(100):
 
-            x_pos = x_pos_turb + distance*198*np.cos(np.pi*yaw[j+k*10]/180) + 5*198*k - \
-                wake_span[y_index]*np.sin(np.pi*yaw[j+k*10]/180)
+            x_pos = x_pos_turb + distance*198*np.cos(np.pi*yaw[j+k*10]/180) + 5*198*k
             #staggered alternate rows
             if k%2 == 0:
-                y_pos = y_pos_turb + distance*198*np.sin(np.pi*yaw[j+k*10]/180) + 5*198*j + \
-                wake_span[y_index]*np.cos(np.pi*yaw[j+k*10]/180)
+                y_pos = y_pos_turb + distance*198*np.sin(np.pi*yaw[j+k*10]/180) + 5*198*j
             else:
-                y_pos = y_pos_turb + distance*198*np.sin(np.pi*yaw[j+k*10]/180) + 5*198*j + 2.5*198 +\
-                wake_span[y_index]*np.cos(np.pi*yaw[j+k*10]/180)
+                y_pos = y_pos_turb + distance*198*np.sin(np.pi*yaw[j+k*10]/180) + 5*198*j + 2.5*198
 
-            pos = np.array([x_pos, y_pos, 119])
+            pos = np.array([x_pos, y_pos, 1000*z[z_index]])
             u_min = interp_u(pos)
             v_min = interp_v(pos)
 
-            wake_yslice[j, i, y_index] = u_min*np.cos(np.pi*yaw[j+k*10]/180) + v_min*np.sin(np.pi*yaw[j+k*10]/180)
+            wake_zslice[j, i, z_index] = u_min*np.cos(np.pi*yaw[j+k*10]/180) + v_min*np.sin(np.pi*yaw[j+k*10]/180)
 
-    mean_wake_profile = np.mean(wake_yslice,axis=0)
-    plot = ax[1,1].plot((u_prec_hubh-mean_wake_profile[i,:])/u_prec_hubh, wake_span/198, c=cmap1(i))
+    mean_wake_profile = np.mean(wake_zslice,axis=0)
+    ax[1,1].plot((u_prec_profile-mean_wake_profile[i,:])/u_prec_hubh, 1000*z[:100]/198, c=cmap1(i))
 
 ax[1,1].set_xlim([0,0.8])
-ax[1,1].set_ylim([-1,1])
-ax[1,1].set_xlabel(r'$\frac{u_{\infty,hubh}-U}{u_{\infty,hubh}}$')
-ax[1,1].set_ylabel(r'$y/D$')
-patch = mpl.patches.Rectangle((0,-0.5), 0.8, 1, color='grey', alpha=0.2)
-ax[1,1].add_patch(patch)
+ax[1,1].set_ylim([0,2])
+ax[1,1].set_xlabel(r'$\frac{u_{\infty}-U}{u_{\infty,hubh}}$')
+ax[1,1].set_ylabel(r'$z/D$')
 
 plt.subplots_adjust(wspace=0.4, hspace=0.3)
 
@@ -211,5 +205,5 @@ cbar2 = fig.colorbar(sm, ax=ax[:,1], ticks=np.linspace(2.5,8.5,8))
 cbar2.set_ticklabels(np.linspace(2,9,8))
 cbar2.set_label(r'$x/D$')
 
-plt.savefig('KirbyFig6.png', bbox_inches='tight')
-plt.savefig('fig6.pdf', bbox_inches='tight')
+plt.savefig('KirbyFig7.png', bbox_inches='tight')
+plt.savefig('fig7.pdf', bbox_inches='tight')

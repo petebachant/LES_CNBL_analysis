@@ -19,7 +19,7 @@ LES_data = np.genfromtxt('LES_data.csv', delimiter=',', dtype=None, names=True, 
 #load csv file to store results
 loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
-for case_no in range(17,40):
+for case_no in range(40,42):
 
     case_id = LES_data[case_no][0]
     print(case_id)
@@ -303,4 +303,4 @@ for case_no in range(17,40):
     print('eta_nl: ', loss_factors[case_no][2])
     print('eta_w: ', loss_factors[case_no][1])
 
-    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))
+    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))

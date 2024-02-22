@@ -40,6 +40,7 @@ r_squared = r2_score(eta_f[index_mask], y_predict)
 ax[0].text(0.1, 0.1, rf'$R^2={round(r_squared,3)}$', ha='left', va='center')
 ax[0].set_ylim([0, 0.6])
 ax[0].set_xlim([0, 1.4])
+ax[0].set_title(r'(A)', loc='left')
 
 #plot linear regression
 x = np.linspace(0.4, 1.3)
@@ -62,6 +63,7 @@ r_squared = r2_score(eta_f[index_mask], y_predict)
 ax[1].text(0.1, 0.1, rf'$R^2={round(r_squared,3)}$', ha='left', va='center')
 ax[1].set_ylim([0, 0.6])
 ax[1].set_xlim([0, 1.2])
+ax[1].set_title(r'(B)', loc='left')
 
 #plot linear regression
 x = np.linspace(0.2,1)

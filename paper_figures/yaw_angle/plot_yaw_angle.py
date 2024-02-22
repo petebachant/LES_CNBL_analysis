@@ -48,7 +48,7 @@ ax[0].pcolormesh(x[x_index_mask]/1000, y/1000, wind_angle_deg.T, shading='neares
 ax[0].set_ylabel(r'$y$ (km)')
 ax[0].set_xlabel(r'$x$ (km)')
 ax[0].set_title(r'(A) H300-C2-G1', loc='left')
-ax[0].text(1,25, r'$\eta_w=P_{farm}/P_1=50\%$', ha='left', va='center')
+ax[0].text(1,25, r'$\eta_w=50\%$', ha='left', va='center', ma='center')
 
 #open LES data for H300-C2-G1
 f = h5py.File(f'{path}H300-C8-G1/stat_main_first_order.h5', 'r')
@@ -66,7 +66,7 @@ pcm = ax[1].pcolormesh(x[x_index_mask]/1000, y/1000, wind_angle_deg.T, shading='
                     cmap=mpl.colormaps['RdBu'], vmin=-10, vmax=10, rasterized=True)
 ax[1].set_xlabel(r'$x$ (km)')
 ax[1].set_title(r'(B) H300-C8-G1', loc='left')
-ax[1].text(1,25, r'$\eta_w=P_{farm}/P_1=100\%$', ha='left', va='center')
+ax[1].text(1,25, r'$\eta_w=100\%$', ha='left', va='center', ma='center')
 
 plt.tight_layout()
 
