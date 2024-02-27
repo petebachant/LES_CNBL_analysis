@@ -21,7 +21,7 @@ LES_data = np.genfromtxt('LES_data.csv', delimiter=',', dtype=None, names=True, 
 #load csv file to store results
 loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
-for case_no in range(44, 45):
+for case_no in range(43, 45):
 
     case_id = LES_data[case_no][0]
     print(case_id[11:])
@@ -108,7 +108,7 @@ for case_no in range(44, 45):
     #check whether case has normal or double spacing
     if case_id[11:] == 'double_spacing':
         print('Double spacing front row')
-        P_1 = np.mean(power[time[:]>75600,:10])
+        P_1 = np.mean(power[time[:]>75600,:5])
     else:
         P_1 = np.mean(power[time[:]>75600,:10])
 
@@ -207,7 +207,6 @@ for case_no in range(44, 45):
     #check whether farm is full length or half length
     if case_id[11:] == 'half_farm':
         x_farm = np.linspace(17.505e3,25.425e3,n_x)
-        print('Half farm length')
     else:
         x_farm = np.linspace(17.505e3,33.345e3,n_x)
     #farm x coordinates (1.25D left of first column and 1.25D right of final column)
@@ -294,7 +293,11 @@ for case_no in range(44, 45):
     loss_factors[case_no][7] = ctstar
 
     #Momentum availability factor M, calculated assumed gamma = 2.0
-    M = force_ave/(5**2 * 198**2 * u_star0**2) + beta**2
+    #check whether turbine spacing is `normal' or double
+    if case_id[11:] == 'double_spacing':
+        M = force_ave/(10**2 * 198**2 * u_star0**2) + beta**2
+    else:
+        M = force_ave/(5**2 * 198**2 * u_star0**2) + beta**2
     loss_factors[case_no][8] = M
     #Wind `extratability' factor zeta`
     zeta = (M-1)/(1-beta)
@@ -306,7 +309,12 @@ for case_no in range(44, 45):
     #################################
 
     #turbine rotor area / land area per turbine
-    array_density = np.pi/(4*5*5)
+    #check whether turbine spacing is `normal' or double
+    if case_id[11:] == 'double_spacing':
+        array_density = np.pi/(4*10*10)
+    else:
+        array_density = np.pi/(4*5*5)
+
     #'internal' turbine thrust coefficient
     ctstar = 0.88 / (M_shapiro**2)
     #natural surface friction coefficient
