@@ -13,16 +13,18 @@ import scipy.interpolate as sp
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
 
+path = '/mnt/c/Users/trin3517/Documents/PhD/Year 4/Research plots and presentations/LES_data/'
+
 #load LES data from precursor and single turbine simulations
 LES_data = np.genfromtxt('LES_data.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
 #load csv file to store results
 loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
-for case_no in range(40,42):
+for case_no in range(44, 45):
 
     case_id = LES_data[case_no][0]
-    print(case_id)
+    print(case_id[11:])
     u_star0 = LES_data[case_no][1]
 
     ##############################################
@@ -30,7 +32,7 @@ for case_no in range(40,42):
     ##############################################
 
     #open precursor file
-    f = h5py.File(f'/mnt/d/LES_data/{case_id}/stat_precursor_first_order.h5', 'r')
+    f = h5py.File(f'{path}{case_id}/stat_precursor_first_order.h5', 'r')
     u = f['u']
     v = f['v']
 
@@ -39,7 +41,7 @@ for case_no in range(40,42):
     v = np.mean(v[:,:,:100], axis=(0,1))
 
     #vertical grid - use cell centered points  
-    with open('/mnt/d/LES_data/zmesh','r') as file:       
+    with open(f'{path}zmesh','r') as file:       
         Nz_full     = int(float(file.readline()))   
         N_line = Nz_full+1
         line = N_line*[0]
@@ -97,13 +99,18 @@ for case_no in range(40,42):
     ##############################################
 
     #calculate turbine power
-    aux = h5py.File(f'/mnt/d/LES_data/{case_id}/aux_files.h5', 'r')
+    aux = h5py.File(f'{path}{case_id}/aux_files.h5', 'r')
     power = aux['power']
     time = aux['time']
     #average turbine power over last 1.5hrs of simulation
     P_les = np.mean(power[time[:]>75600,:])
     #first row turbine power
-    P_1 = np.mean(power[time[:]>75600,:10])
+    #check whether case has normal or double spacing
+    if case_id[11:] == 'double_spacing':
+        print('Double spacing front row')
+        P_1 = np.mean(power[time[:]>75600,:10])
+    else:
+        P_1 = np.mean(power[time[:]>75600,:10])
 
     power_ratio_les = P_les / P_betz
 
@@ -179,22 +186,30 @@ for case_no in range(40,42):
     y = 21.74*np.arange(1380)
 
     #open velocity file
-    f = h5py.File(f'/mnt/d/LES_data/{case_id}/stat_main_first_order.h5', 'r')
+    f = h5py.File(f'{path}{case_id}/stat_main_first_order.h5', 'r')
     u = f['u']
     v = f['v']
+    p = f['p']
 
     #create interpolating function for gridded data
     interp_u = sp.RegularGridInterpolator((x[544:1120], y[400:1050], 1000*z[:100]), 
     u[544:1120,400:1050,:100], bounds_error=False, fill_value=None)
     interp_v = sp.RegularGridInterpolator((x[544:1120], y[400:1050], 1000*z[:100]), 
     v[544:1120,400:1050,:100], bounds_error=False, fill_value=None)
+    interp_p = sp.RegularGridInterpolator((x[544:1120], y[400:1050], 1000*z[15:30]), 
+    p[544:1120,400:1050,15:30], bounds_error=False, fill_value=None)
 
     #grid to interpolate velocity onto
     n_x = 500
     n_y = 500
     n_z = 100
     #farm x coordinates (2.5D in front of first row and 2.5D behind final row)
-    x_farm = np.linspace(17.505e3,33.345e3,n_x)
+    #check whether farm is full length or half length
+    if case_id[11:] == 'half_farm':
+        x_farm = np.linspace(17.505e3,25.425e3,n_x)
+        print('Half farm length')
+    else:
+        x_farm = np.linspace(17.505e3,33.345e3,n_x)
     #farm x coordinates (1.25D left of first column and 1.25D right of final column)
     y_farm = np.linspace(10.050e3,19.950e3,n_y)
     z_farm = np.linspace(0,2.5*119,n_z)
@@ -207,6 +222,29 @@ for case_no in range(40,42):
     #calculate average u and v
     u = np.mean(interp_u(pos))
     v = np.mean(interp_v(pos))
+
+    #calculate pressure 2.5D in front of farm
+    x_farm = 33.345e3
+    y_farm = np.linspace(10.050e3,19.950e3,n_y)
+    z_farm = 119
+    xg, yg, zg = np.meshgrid(x_farm, y_farm, z_farm)
+    pos = np.zeros((n_y,3))
+    pos[:,0] = xg.flatten()
+    pos[:,1] = yg.flatten()
+    pos[:,2] = zg.flatten()
+    p_front = np.mean(interp_p(pos))
+    #calculate pressure 2.5D behind farm
+    x_farm = 17.505e3
+    y_farm = np.linspace(10.050e3,19.950e3,n_y)
+    z_farm = 119
+    xg, yg, zg = np.meshgrid(x_farm, y_farm, z_farm)
+    pos = np.zeros((n_y,3))
+    pos[:,0] = xg.flatten()
+    pos[:,1] = yg.flatten()
+    pos[:,2] = zg.flatten()
+    p_rear = np.mean(interp_p(pos))
+    p_farm = p_rear - p_front
+    loss_factors[case_no][11] = p_farm
 
     #convert yaw angle to radians
     yaw_mean_rad = np.pi*np.mean(yaw_mean)/180
@@ -249,11 +287,18 @@ for case_no in range(40,42):
 
     #farm wind speed reduction factor beta
     beta = u_f/u_f0
+    loss_factors[case_no][9] = beta
+
+    #calculate `internal' turbine thrust coefficient
+    ctstar = force_ave / (0.5 * turbine_area * u_f**2)
+    loss_factors[case_no][7] = ctstar
 
     #Momentum availability factor M, calculated assumed gamma = 2.0
     M = force_ave/(5**2 * 198**2 * u_star0**2) + beta**2
+    loss_factors[case_no][8] = M
     #Wind `extratability' factor zeta`
     zeta = (M-1)/(1-beta)
+    loss_factors[case_no][10] = zeta
     print('zeta: ',zeta)
 
     #################################
@@ -303,4 +348,4 @@ for case_no in range(40,42):
     print('eta_nl: ', loss_factors[case_no][2])
     print('eta_w: ', loss_factors[case_no][1])
 
-    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))
+    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))

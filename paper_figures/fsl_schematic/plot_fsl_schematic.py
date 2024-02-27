@@ -65,13 +65,13 @@ ax.annotate("", xy=(9.97, 0.3), xytext=(9.97, 0.592), arrowprops=dict(arrowstyle
 
 ax.text(6.2, 0.475, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$\Pi_F=1-\frac{C_{p,Nishino}}{C_{p,Betz}}$',
          ha='left', va='center', ma='left')
-ax.text(6.2, 0.26, r'Turbine-scale'+'\n'+r'losses' +'\n'+r'$\Pi_T=1-\frac{C_{p,Nishino}}{C_{p,Betz}}$', 
+ax.text(6.2, 0.26, r'Turbine-scale'+'\n'+r'losses' +'\n'+r'$\Pi_T=1-\frac{C_{p}}{C_{p,Nishino}}$', 
         ha='left', va='center', ma='left')
 ax.text(16, 0.24, r"$C_{p,Nishino}$ ($\zeta=25$, $\gamma=2.0$,"+'\n'+r"$C_T'=1.9417$)", ha='left', va='center', ma='right', c=tab10(0))
 
 #plt.tight_layout()
 ax.set_ylim([0, 0.65])
 ax.set_xlabel(r'$\lambda/C_{f0}$')
-ax.set_ylabel(r'$C_p$')
+ax.set_ylabel(r'$C_p$', rotation=0)
 plt.savefig('KirbyFig10.png', bbox_inches='tight')
 plt.savefig('fig10.pdf', bbox_inches='tight')

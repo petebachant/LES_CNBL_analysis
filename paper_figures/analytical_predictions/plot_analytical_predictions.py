@@ -49,5 +49,5 @@ ax[1].text(1.2,-12.5, r'Underprediction', ha='left', va='center')
 ax[1].set_title(r'(B) MAPE 5.67\%', loc='left')
 
 plt.tight_layout()
-plt.savefig('KirbyFig14.png', bbox_inches='tight')
-plt.savefig('fig14.pdf', bbox_inches='tight')
+plt.savefig('KirbyFig15.png', bbox_inches='tight')
+plt.savefig('fig15.pdf', bbox_inches='tight')

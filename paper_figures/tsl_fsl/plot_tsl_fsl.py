@@ -33,7 +33,7 @@ ax[0].scatter(1-tsl[index_mask], total_loss[index_mask], c='b', marker='x')
 ax[0].set_ylim([0, 0.6])
 ax[0].set_xlim([0, 1.2])
 
-ax[0].set_ylabel(r'$P_{farm}/P_{Betz}$')
+ax[0].set_ylabel(r'$C_p/C_{p,Betz}$')
 ax[0].set_xlabel(r'$1-\Pi_T$')
 ax[0].set_title(r'(A)', loc='left')
 
@@ -60,5 +60,5 @@ ax[1].plot(x,y)
 ax[1].set_xlabel(r'$1-\Pi_F$')
 
 plt.tight_layout()
-plt.savefig('KirbyFig12.png', bbox_inches='tight')
-plt.savefig('fig12.pdf', bbox_inches='tight')
+plt.savefig('KirbyFig13.png', bbox_inches='tight')
+plt.savefig('fig13.pdf', bbox_inches='tight')
