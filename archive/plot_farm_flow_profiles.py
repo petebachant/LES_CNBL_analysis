@@ -1,12 +1,17 @@
-"""Plot farm flow profiles
+"""Plot wake recovery
+in wind farm LES
 """
 
 import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate as sp
+from scipy import stats
+from scipy.optimize import curve_fit
 
-case_id = 'H1000-C5-G4'
+plt.style.use("plots/style.mplstyle")
+
+case_id = 'H300-C2-G1'
 
 #vertical grid - use cell centered points  
 with open('/mnt/d/LES_data/zmesh','r') as file:       
@@ -19,64 +24,38 @@ with open('/mnt/d/LES_data/zmesh','r') as file:
         cnt+=1       
     z = np.array([float(line[k][0]) for k in range(int(Nz_full))])[1::2]
 
-f = h5py.File(f'/mnt/d/LES_data/{case_id}/stat_main_first_order.h5', 'r')
-u = f['u']
-
-#check farm area
+#define x, y, z coordinates
 x = 31.25*np.arange(1600)
 y = 21.74*np.arange(1380)
+
+#create meshgrid
+xg, yg ,zg = np.meshgrid(x, y, z, indexing='ij', sparse=True)
+
+#load u data
+f = h5py.File(f'/mnt/d/LES_data/{case_id}/stat_main_first_order.h5', 'r')
+u = f['u']
+v = f['v']
+
+#plot farm area and wake tracks
 xx, yy = np.meshgrid(x, y)
+fig, ax = plt.subplots(figsize=[6,4], dpi=300)
+plt.pcolormesh(xx[450:1000,544:1120]/1000, yy[450:1000,544:1120]/1000, u[544:1120,450:1000,23].T,shading='nearest', vmin=2, vmax=10)
+cbar = plt.colorbar()
+cbar.set_label(r'$u$ (m/s)')
+plt.ylim([10,20])
+plt.xlim([17.5,35])
+plt.xlabel(r'x (km)')
+plt.ylabel(r'y (km)')
+ax.set_aspect('equal')
+plt.tight_layout()
+plt.savefig(f'plots/{case_id}/farm_area.png')
 
-#interpolate in z direction
-f_u_z = sp.interp1d(1000*z[23:25], u[:,:,23:25])
-u_xy = f_u_z(119)
-    
-#plot farm flow field
-plt.figure(1)
-plt.pcolormesh(xx, yy, u_xy.T,shading='nearest')
-plt.colorbar()
-plt.plot([23.415e3, 26.3835e3, 26.3825e3, 23.415e3, 23.415e3],
-    [14.505e3, 14.505e3, 15.99e3, 15.99e3, 14.505e3], c='r')
-plt.ylim([10e3,20e3])
-plt.xlim([17.5e3,35e3])
-plt.savefig('plots/farm_area.png')
-plt.close(1)
+plt.plot([23.415, 26.3835, 26.3825, 23.415, 23.415],
+    [14.505, 14.505, 15.99, 15.99, 14.505], c='r')
+plt.savefig(f'plots/{case_id}/farm_area_box.png')
 
-#plot zoomed in profile
-plt.figure(2)
-plt.pcolormesh(xx, yy, u_xy.T,shading='nearest', vmin=2, vmax=10)
-plt.colorbar()
-plt.ylim([14.505e3,15.99e3])
-plt.xlim([23.4135e3,26.3835e3])
-plt.savefig('plots/farm_area_zoom.png')
-plt.close(2)
-
-#plot zoomed in profile
-plt.figure(3)
-plt.pcolormesh(xx, yy, u_xy.T,shading='nearest', vmin=2, vmax=10)
-plt.colorbar()
-for i in range(10):
-    plt.plot([23.908e3+i*198, 23.908e3+i*198], [14.7525e3, 15.7425e3], c='r')
-plt.ylim([14.505e3,15.99e3])
-plt.xlim([23.4135e3,26.3835e3])
-plt.savefig('plots/farm_area_zoom1.png')
-plt.close(3)
-
-#plot wake profiles
-cmap = plt.get_cmap('viridis', 10)
-#interpolate in x direction
-f_u_y = sp.interp1d(31.25*np.arange(1600), u_xy, axis=0)
-
-for i in range(10):
-    x_pos = 23.908e3+i*198
-    #spanwise average u velocity
-    f_u_y_ave = sp.interp1d(21.74*np.arange(1380), f_u_y(x_pos))
-    u_y_ave = f_u_y_ave(np.linspace(14.7525e3,15.7425e3, 500))
-    plt.plot(u_y_ave, np.linspace(-2.5*198, 2.5*198, 500), c=cmap(i))
-
-plt.axhline(99.5)
-plt.axhline(-99.5)
-plt.savefig('plots/wake_profiles.png')
-
+plt.ylim([14.505,15.99])
+plt.xlim([23.415,26.3835])
+plt.savefig(f'plots/{case_id}/farm_area_zoom.png')
 
 
