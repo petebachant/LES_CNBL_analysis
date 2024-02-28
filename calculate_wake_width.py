@@ -185,4 +185,4 @@ for case_no in range(15,30):
     plt.savefig(f'plots/{case_id}/wake_width.png')
     plt.close(4)
 
-    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))
+    np.savetxt('loss_factors.csv', loss_factors, delimiter=',', fmt="%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", header=','.join(loss_factors.dtype.names))

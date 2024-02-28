@@ -13,6 +13,7 @@ import scipy.interpolate as sp
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
 
+#path variable to change!
 path = '/mnt/c/Users/trin3517/Documents/PhD/Year 4/Research plots and presentations/LES_data/'
 
 #load LES data from precursor and single turbine simulations
@@ -50,7 +51,7 @@ for case_no in range(40, 45):
             cnt+=1       
         z = np.array([float(line[k][0]) for k in range(int(Nz_full))])[1::2]
 
-    #interpolate
+    #interpolate precursor velocity profiles
     interp_u = sp.interp1d(1000*z[:100], 
     u, bounds_error=False, fill_value='extrapolate')
     interp_v = sp.interp1d(1000*z[:100], 
@@ -86,10 +87,12 @@ for case_no in range(40, 45):
     M_shapiro = M_shapiro * ct_prime / 4
     M_shapiro = M_shapiro + 1
     M_shapiro = M_shapiro**(-1)
-    #calculate uncorrected power coefficient
+    #calculate power coefficient of LES actuator discs
     cp_ad_overpredict = cp_ad / (M_shapiro**3)
 
-    #calculate P_Betz (per unit density)
+    #calculate P_Betz (per unit air density)
+    #i.e. power of single isolated actuator disc
+    #note that this is different from P_{\infty} from single turbine LES
     turbine_area = np.pi * 198**2 / 4
     P_betz = 0.5 * cp_ad_overpredict * turbine_area * M_hub**3
 
@@ -106,7 +109,6 @@ for case_no in range(40, 45):
     #first row turbine power
     #check whether case has normal or double spacing
     if case_id[11:] == 'double_spacing':
-        print('Double spacing front row')
         P_1 = np.mean(power[time[:]>75600,:5])
     else:
         P_1 = np.mean(power[time[:]>75600,:10])
@@ -137,8 +139,6 @@ for case_no in range(40, 45):
     plt.savefig('plots/vertical_velocity_profiles.png')
     plt.close()
 
-
-
     #check convergence of u_f0 calculation with vertical levels
     while False:
         n_z_values = np.linspace(10,500,10)
@@ -162,7 +162,7 @@ for case_no in range(40, 45):
     # from the wind farm LES 
     ##############################################
 
-    #calculate average yaw angle
+    #calculate average turbine yaw angle
     #yaw in degrees
     yaw = aux['yaw']
     time = aux['time']
@@ -208,7 +208,7 @@ for case_no in range(40, 45):
         x_farm = np.linspace(17.505e3,25.425e3,n_x)
     else:
         x_farm = np.linspace(17.505e3,33.345e3,n_x)
-    #farm x coordinates (1.25D left of first column and 1.25D right of final column)
+    #farm y coordinates (1.25D left of first column and 1.25D right of final column)
     y_farm = np.linspace(10.050e3,19.950e3,n_y)
     z_farm = np.linspace(0,2.5*119,n_z)
     xg, yg, zg = np.meshgrid(x_farm, y_farm, z_farm)
@@ -221,7 +221,7 @@ for case_no in range(40, 45):
     u = np.mean(interp_u(pos))
     v = np.mean(interp_v(pos))
 
-    #calculate pressure 2.5D in front of farm
+    #calculate pressure 2.5D behind farm
     x_farm = 33.345e3
     y_farm = np.linspace(10.050e3,19.950e3,n_y)
     z_farm = 119
@@ -230,8 +230,8 @@ for case_no in range(40, 45):
     pos[:,0] = xg.flatten()
     pos[:,1] = yg.flatten()
     pos[:,2] = zg.flatten()
-    p_front = np.mean(interp_p(pos))
-    #calculate pressure 2.5D behind farm
+    p_rear = np.mean(interp_p(pos))
+    #calculate pressure 2.5D in front farm
     x_farm = 17.505e3
     y_farm = np.linspace(10.050e3,19.950e3,n_y)
     z_farm = 119
@@ -240,8 +240,8 @@ for case_no in range(40, 45):
     pos[:,0] = xg.flatten()
     pos[:,1] = yg.flatten()
     pos[:,2] = zg.flatten()
-    p_rear = np.mean(interp_p(pos))
-    p_farm = p_rear - p_front
+    p_front = np.mean(interp_p(pos))
+    p_farm = p_front - p_rear
     loss_factors[case_no][11] = p_farm
 
     #convert yaw angle to radians
@@ -291,7 +291,7 @@ for case_no in range(40, 45):
     ctstar = force_ave / (0.5 * turbine_area * u_f**2)
     loss_factors[case_no][7] = ctstar
 
-    #Momentum availability factor M, calculated assumed gamma = 2.0
+    #Momentum availability factor M, calculated assuming gamma = 2.0
     #check whether turbine spacing is `normal' or double
     if case_id[11:] == 'double_spacing':
         M = force_ave/(10**2 * 198**2 * u_star0**2) + beta**2
@@ -307,7 +307,7 @@ for case_no in range(40, 45):
     # 7. Calculate C_{p,Nishino}
     #################################
 
-    #turbine rotor area / land area per turbine
+    #array density is turbine rotor area / land area per turbine
     #check whether turbine spacing is `normal' or double
     if case_id[11:] == 'double_spacing':
         array_density = np.pi/(4*10*10)
@@ -320,6 +320,8 @@ for case_no in range(40, 45):
     cf0 = u_star0**2/(0.5*u_f0**2)
     print('cf0: ', cf0)
 
+    #solve non-dimensional farm momentum (NDFM) equation for beta
+    #see Nishino & Dunstan 2020 for more details https://doi.org/10.1017/jfm.2020.252
     def ndfm(beta):
         lhs = ctstar*(array_density/cf0)*beta**2 + beta**2
 
