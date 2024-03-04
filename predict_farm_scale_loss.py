@@ -20,14 +20,10 @@ from sklearn.linear_model import LinearRegression
 loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
 #path to wind farm LES data
-path = '/mnt/e/LES_data/'
+path = '/mnt/c/Users/trin3517/Documents/PhD/Year 4/Research plots and presentations/LES_data/'
 
 #wind farm variables
 
-#lambda - array density
-array_density = np.pi/(4*5*5)
-#L - wind farm length in streamwise direction
-farm_length = 15.84e3
 #h_f - farm-layer height (defined as 2.5H_hub where H_hub is turbine hub height)
 h_f = 2.5*119
 #ctstar 'internal' turbine thurst coefficient
@@ -49,7 +45,7 @@ M_shapiro = M_shapiro + 1
 M_shapiro = M_shapiro**(-1)
 ctstar = 0.88 / (M_shapiro**2)
 
-for case_no in range(30):
+for case_no in range(43,45):
 
     case_id = loss_factors[case_no][0]
     print(case_id)
@@ -136,10 +132,24 @@ for case_no in range(30):
     # 3. Calculate C_{p,Nishino}
     #################################
 
+    #check whether farm length is normal of half
+    if case_id[11:] == 'half_farm':
+        #L - wind farm length in streamwise direction
+        farm_length = 7.92e3
+    else:
+        farm_length = 15.84e3
+
     #turbine rotor area divided surface area per turbine
     cf0 = u_star0**2/(0.5*u_f0**2)
     #wind `extractability' factor
     zeta = 1.18 + (2.18*h_f)/(cf0*farm_length*(1-shear_ratio))
+
+    #check whether turbine spacing is normal or double
+    if case_id[11:] == 'double_spacing':
+        #lambda - array density
+        array_density = np.pi/(4*10*10)
+    else:
+        array_density = np.pi/(4*5*5)
 
     def ndfm(beta):
         lhs = ctstar*(array_density/cf0)*beta**2 + beta**2

@@ -34,7 +34,7 @@ ax[0].set_ylim([0, 0.6])
 ax[0].set_xlim([0, 1.2])
 
 ax[0].set_ylabel(r'$C_p/C_{p,Betz}$')
-ax[0].set_xlabel(r'$1-\Pi_T$')
+ax[0].set_xlabel(r'$\eta_{turbine-scale}$')
 ax[0].set_title(r'(A)', loc='left')
 
 #plot farm efficiency against non-local efficiency
@@ -57,8 +57,8 @@ x = np.linspace(0.25,0.5)
 y = regr.predict(x.reshape(-1, 1))
 ax[1].plot(x,y)
 
-ax[1].set_xlabel(r'$1-\Pi_F$')
+ax[1].set_xlabel(r'$\eta_{farm-scale}$')
 
 plt.tight_layout()
-plt.savefig('KirbyFig13.png', bbox_inches='tight')
-plt.savefig('fig13.pdf', bbox_inches='tight')
+plt.savefig('KirbyFig14.png', bbox_inches='tight')
+plt.savefig('fig14.pdf', bbox_inches='tight')

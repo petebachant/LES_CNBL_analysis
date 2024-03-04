@@ -21,8 +21,8 @@ for i in range(40):
     M[i] = loss_factors[i][8]
     beta[i] = loss_factors[i][9]
 
-plt.scatter(1-beta[19], M[19]-1, c='r', marker='x', zorder=1)
-plt.scatter(1-beta[29], M[29]-1, c='r', marker='x', zorder=1)
+plt.scatter(1-beta[19], M[19]-1, c='r', marker='o', zorder=1)
+plt.scatter(1-beta[29], M[29]-1, c='r', marker='o', zorder=1)
 
 x = np.linspace(0, 30, 100)
 zeta = (M[19]-1)/(1-beta[19])

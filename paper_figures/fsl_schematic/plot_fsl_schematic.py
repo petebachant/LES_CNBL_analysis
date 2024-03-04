@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as opt
 import matplotlib as mpl
+import h5py
+
+#path variable to change!
+path = '/mnt/c/Users/trin3517/Documents/PhD/Year 4/Research plots and presentations/LES_data/'
 
 plt.style.use("../style.mplstyle")
 
@@ -9,11 +13,44 @@ textwidth = 7
 golden_ratio = 1.61803
 fig, ax = plt.subplots(figsize=[textwidth,textwidth/(golden_ratio)], dpi=300)
 
-cp_nishino = np.zeros(50)
-effective_array_density = np.linspace(5,20,50)
+#load csv file of farm loss factors
+loss_factors = np.genfromtxt('../loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
-ctstar = 0.88
-zeta = 25
+#turbine-scale loss factors
+tsl = np.zeros(44)
+#farm-scale loss factors
+fsl = np.zeros(44)
+#total loss i.e. P_farm/P_Betz
+total_loss = np.zeros(44)
+
+for i in range(44):
+    tsl[i] = loss_factors[i][3]
+    fsl[i] = loss_factors[i][4]
+    total_loss[i] = (1-tsl[i])*(1-fsl[i])
+
+cp_ratio = np.zeros(50)
+effective_array_density = np.linspace(2,25,50)
+
+#power coefficient should be overpredicted due to
+#the effect of the Gaussian filter length
+#here we calculate the overpredicted power coefficient 
+#of an actuator disc with ct_prime = 1.9417 according to
+#Shapiro et. al. 2019
+
+#calculate shapiro correction factor
+#Gaussian filter length is yz direction is 32.61m
+ct_prime = 1.9417
+delta_r = 32.61
+turbine_radius = 99
+#using equation 26 of Shapiro et. al. 2019
+M_shapiro = delta_r/turbine_radius
+M_shapiro = M_shapiro / np.sqrt(3*np.pi)
+M_shapiro = M_shapiro * ct_prime / 4
+M_shapiro = M_shapiro + 1
+M_shapiro = M_shapiro**(-1)
+
+ctstar = 0.88/M_shapiro**2
+zeta = 38.1
 
 for i in range(50):
 
@@ -25,53 +62,74 @@ for i in range(50):
         return lhs - rhs
 
     beta = opt.bisect(ndfm,1,0.3)
-    cp_nishino[i] = 0.592*beta**3
+    cp_ratio[i] = beta**3
 
-plt.plot([5, 20], [0.592, 0.592], c='k')
-plt.plot(effective_array_density, cp_nishino, zorder=0)
-plt.scatter([9.97, 11.76], [0.225, 0.27], marker='x', c='r', zorder=1)
+plt.plot([2, 25], [1, 1], c='k')
+plt.plot(effective_array_density, cp_ratio, zorder=0)
+plt.scatter(17.85, total_loss[15], marker='x', c='r', zorder=1)
+plt.scatter(17.85, total_loss[41], marker='x', c='r', zorder=1)
+plt.scatter(4.46, total_loss[43], marker='x', c='r', zorder=1)
 
 
-left, bottom, width, height = [0.475, 0.15, 0.2, 0.2]
+left, bottom, width, height = [0.675, 0.5, 0.2, 0.2]
 ax2 = fig.add_axes([left, bottom, width, height])
-u_wind_hubh50 = np.load('u_wind_hubh50.npy')
-n_x, n_y = np.shape(u_wind_hubh50)
-x = 24.5*np.arange(0, n_x)/100
-y = 24.5*np.arange(0, n_y)/100
-x, y = np.meshgrid(x, y)
-pcm = ax2.pcolormesh(x, y, np.transpose(u_wind_hubh50)/10.10348311, vmin=0.1, vmax=0.4, rasterized=True)
+f = h5py.File(f'{path}H500-C5-G4/stat_main_first_order.h5', 'r')
+u = f['u']
+x = 31.25*np.arange(1600)
+y = 21.74*np.arange(1380)
+ax2.set_xlim([25,30])
+ax2.set_ylim([12.5,17.5])
+ax2.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
+                    shading='nearest', vmin=2, vmax=10, rasterized=True)
 ax2.set_aspect('equal')
 ax2.set_yticks([])
 ax2.set_xticks([])
 
-left, bottom, width, height = [0.585, 0.575, 0.2, 0.2]
+left, bottom, width, height = [0.675, 0.14, 0.2, 0.2]
 ax3 = fig.add_axes([left, bottom, width, height])
-u_wind_hubh6 = np.load('u_wind_hubh6.npy')
-n_x, n_y = np.shape(u_wind_hubh6)
-x = 24.5*np.arange(0, n_x)/100
-y = 24.5*np.arange(0, n_y)/100
-x, y = np.meshgrid(x, y)
-pcm = ax3.pcolormesh(x, y, np.transpose(u_wind_hubh6)/10.10348311, vmin=0.1, vmax=0.4, rasterized=True)
+f = h5py.File(f'{path}H500-C5-G4_aligned/stat_main_first_order.h5', 'r')
+u = f['u']
+x = 31.25*np.arange(1600)
+y = 21.74*np.arange(1380)
+ax3.set_xlim([25,30])
+ax3.set_ylim([12.5,17.5])
+ax3.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
+                    shading='nearest', vmin=2, vmax=10, rasterized=True)
 ax3.set_aspect('equal')
 ax3.set_yticks([])
 ax3.set_xticks([])
 
-ax.annotate("", xy=(11.9, 0.28), xytext=(14.5, 0.475), arrowprops=dict(arrowstyle="->"))
-ax.annotate("", xy=(10.2, 0.215), xytext=(12.4, 0.1), arrowprops=dict(arrowstyle="->"))
-ax.text(12, 0.6, r"Isolated turbine $C_{p,Betz}$ ($C_T'=1.9417$)", ha='center', va='bottom')
-tab10 = mpl.colormaps['tab10']
-ax.annotate("", xy=(9.97, 0.23), xytext=(9.97, 0.3), arrowprops=dict(arrowstyle="<->"), color=tab10(1))
-ax.annotate("", xy=(9.97, 0.3), xytext=(9.97, 0.592), arrowprops=dict(arrowstyle="<->"), color=tab10(2))
+left, bottom, width, height = [0.2, 0.2, 0.2, 0.2]
+ax4 = fig.add_axes([left, bottom, width, height])
+f = h5py.File(f'{path}H500-C5-G4_double_spacing/stat_main_first_order.h5', 'r')
+u = f['u']
+x = 31.25*np.arange(1600)
+y = 21.74*np.arange(1380)
+ax4.set_xlim([25,30])
+ax4.set_ylim([12.5,17.5])
+ax4.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
+                    shading='nearest', vmin=2, vmax=10, rasterized=True)
+ax4.set_aspect('equal')
+ax4.set_yticks([])
+ax4.set_xticks([])
 
-ax.text(6.2, 0.475, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$\Pi_F=1-\frac{C_{p,Nishino}}{C_{p,Betz}}$',
+ax.annotate("", xy=(18.1, 0.46), xytext=(19.9, 0.7), arrowprops=dict(arrowstyle="->", color='r'))
+ax.annotate("", xy=(18.1, 0.325), xytext=(19.9, 0.2), arrowprops=dict(arrowstyle="->", color='r'))
+ax.annotate("", xy=(4.5, 0.7), xytext=(6.5, 0.425), arrowprops=dict(arrowstyle="->", color='r'))
+ax.text(12.5, 1, r"Isolated turbine", ha='center', va='bottom')
+tab10 = mpl.colormaps['tab10']
+ax.annotate("", xy=(17.5, 0.335), xytext=(17.5, 0.44), arrowprops=dict(arrowstyle="<->"), color=tab10(1), zorder=0)
+ax.annotate("", xy=(17.5, 0.42), xytext=(17.5, 1), arrowprops=dict(arrowstyle="<->"), color=tab10(2), zorder=0)
+
+ax.text(13.75, 0.75, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$FSL$',
          ha='left', va='center', ma='left')
-ax.text(6.2, 0.26, r'Turbine-scale'+'\n'+r'losses' +'\n'+r'$\Pi_T=1-\frac{C_{p}}{C_{p,Nishino}}$', 
+ax.text(13.75, 0.36, r'Turbine-scale'+'\n'+r'losses'+'\n'+r'$TSL$', 
         ha='left', va='center', ma='left')
-ax.text(16, 0.24, r"$C_{p,Nishino}$ ($\zeta=25$, $\gamma=2.0$,"+'\n'+r"$C_T'=1.9417$)", ha='left', va='center', ma='right', c=tab10(0))
+ax.text(3, 0.9, r"$C_{p,Nishino}/C_{p,Betz}$" +"\n"+r"($\zeta=38.1$, $\gamma=2.0$, $C_T'=1.94$)", ha='left', va='center', ma='left', c=tab10(0))
 
 #plt.tight_layout()
-ax.set_ylim([0, 0.65])
+ax.set_ylim([0, 1.1])
 ax.set_xlabel(r'$\lambda/C_{f0}$')
-ax.set_ylabel(r'$C_p$', rotation=0)
-plt.savefig('KirbyFig10.png', bbox_inches='tight')
-plt.savefig('fig10.pdf', bbox_inches='tight')
+ax.set_ylabel(r'$C_p/C_{p,Betz}$')
+plt.savefig('KirbyFig12.png', bbox_inches='tight')
+plt.savefig('fig12.pdf', bbox_inches='tight')
