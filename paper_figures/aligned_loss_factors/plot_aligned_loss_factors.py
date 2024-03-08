@@ -36,8 +36,8 @@ index_mask = [5, 40, 15, 41, 25, 42]
 
 tab20 = mpl.colormaps['tab20']
 
-ax[0].bar(np.arange(6), eta_w[index_mask], width=0.2, label=r'$\eta_w$', color=tab20(0))
 ax[0].bar(np.arange(6)-0.2, eta_f[index_mask], width=0.2, label=r'$\eta_f$', color='k')
+ax[0].bar(np.arange(6), eta_w[index_mask], width=0.2, label=r'$\eta_w$', color=tab20(0))
 ax[0].bar(np.arange(6)+0.2, eta_nl[index_mask], width=0.2, label=r'$\eta_{nl}$', color=tab20(2))
 ax[0].set_ylim([0,1.2])
 ax[0].axvline(1.5, c='grey')
@@ -47,11 +47,11 @@ ax[0].set_xticks(np.arange(6), [r'Staggered', r'Aligned', r'Staggered', r'Aligne
 ax[0].text(0.5, 1.15, r'H1000-C5-G4', ha='center', va='top')
 ax[0].text(2.5, 1.15, r'H500-C5-G4', ha='center', va='top')
 ax[0].text(4.5, 1.15, r'H300-C5-G4', ha='center', va='top')
-ax[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.5), ncol=2)
+ax[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.5), ncol=3)
 
-ax[1].bar(np.arange(6), 1-tsl[index_mask], width=0.2, label=r'$\eta_{turbine-scale}$', color=tab20(0))
 ax[1].bar(np.arange(6)-0.2, total_loss[index_mask], width=0.2, label=r'$C_p/C_{p,Betz}$', color='k')
-ax[1].bar(np.arange(6)+0.2, 1-fsl[index_mask], width=0.2, label=r'$\eta_{farm-scale}$', color=tab20(2))
+ax[1].bar(np.arange(6), 1-tsl[index_mask], width=0.2, label=r'$\eta_{ts}$', color=tab20(0))
+ax[1].bar(np.arange(6)+0.2, 1-fsl[index_mask], width=0.2, label=r'$\eta_{fs}$', color=tab20(2))
 ax[1].set_ylim([0,1.2])
 ax[1].axvline(1.5, c='grey')
 ax[1].axvline(3.5, c='grey')
@@ -60,7 +60,7 @@ ax[1].set_xticks(np.arange(6), [r'Staggered', r'Aligned', r'Staggered', r'Aligne
 ax[1].text(0.5, 1.15, r'H1000-C5-G4', ha='center', va='top')
 ax[1].text(2.5, 1.15, r'H500-C5-G4', ha='center', va='top')
 ax[1].text(4.5, 1.15, r'H300-C5-G4', ha='center', va='top')
-ax[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.5), ncol=2)
+ax[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.5), ncol=3)
 ax[1].plot([-0.5, 1.5], [0.450, 0.450], c='grey', linestyle='--', zorder=0)
 ax[1].plot([1.5, 3.5], [0.427, 0.427], c='grey', linestyle='--', zorder=0)
 ax[1].plot([3.5, 5.5], [0.369, 0.369], c='grey', linestyle='--', zorder=0)
