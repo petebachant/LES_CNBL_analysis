@@ -10,7 +10,8 @@ plt.style.use("../style.mplstyle")
 
 textwidth = 7
 golden_ratio = 1.61803
-fig, ax = plt.subplots(ncols=2, figsize=[textwidth,textwidth/(2*golden_ratio)], dpi=300)
+cm = 1/2.54
+fig, ax = plt.subplots(ncols=2, figsize=[12*cm,12*cm/(1.75*golden_ratio)], dpi=300, layout='constrained')
 
 #open LES data for H300-C2-G1
 f = h5py.File(f'{path}H300-C2-G1/stat_main_first_order.h5', 'r')
@@ -47,8 +48,9 @@ ax[0].pcolormesh(x[x_index_mask]/1000, y/1000, wind_angle_deg.T, shading='neares
 
 ax[0].set_ylabel(r'$y$ (km)')
 ax[0].set_xlabel(r'$x$ (km)')
-ax[0].set_title(r'(A) H300-C2-G1', loc='left')
-ax[0].text(1,25, r'$\eta_w=50\%$', ha='left', va='center', ma='center')
+ax[0].set_title(r'a) H300-C2-G1', loc='left')
+ax[0].text(1,25, r'$\eta_w=0.501$', ha='left', va='center', ma='center')
+ax[0].set_aspect('equal')
 
 #open LES data for H300-C2-G1
 f = h5py.File(f'{path}H300-C8-G1/stat_main_first_order.h5', 'r')
@@ -65,10 +67,11 @@ wind_angle_deg = 180*wind_angle/np.pi
 pcm = ax[1].pcolormesh(x[x_index_mask]/1000, y/1000, wind_angle_deg.T, shading='nearest', 
                     cmap=mpl.colormaps['RdBu'], vmin=-10, vmax=10, rasterized=True)
 ax[1].set_xlabel(r'$x$ (km)')
-ax[1].set_title(r'(B) H300-C8-G1', loc='left')
-ax[1].text(1,25, r'$\eta_w=100\%$', ha='left', va='center', ma='center')
+ax[1].set_title(r'b) H300-C8-G1', loc='left')
+ax[1].text(1,25, r'$\eta_w=1.00$', ha='left', va='center', ma='center')
+ax[1].set_aspect('equal')
 
-plt.tight_layout()
+#plt.tight_layout()
 
 cbar = fig.colorbar(pcm, ax=ax)
 cbar.set_label(r'$\gamma$ (deg.)')

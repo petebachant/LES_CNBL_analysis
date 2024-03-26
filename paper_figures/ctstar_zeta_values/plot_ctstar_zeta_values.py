@@ -10,7 +10,8 @@ tab10 = mpl.colormaps['tab10']
 
 textwidth = 7
 golden_ratio = 1.61803
-fig, ax = plt.subplots(nrows=2, figsize=[textwidth,textwidth/(golden_ratio)], dpi=300)
+cm = 1/2.54
+fig, ax = plt.subplots(nrows=2, figsize=[17.76*cm,17.76*cm/(1.25*golden_ratio)], dpi=300, layout='constrained')
 
 #load csv file of farm loss factors
 loss_factors = np.genfromtxt('../loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
@@ -50,9 +51,9 @@ ax[0].legend(loc='lower right')
 
 ax[0].set_xticks(range(38))
 ax[0].set_xticklabels([])
-ax[0].set_ylim([0, 1.1])
+ax[0].set_ylim([0, 1.2])
 ax[0].set_xlim([-1, 38])
-ax[0].set_title(r'(A)', loc='left')
+ax[0].set_title(r'a)', loc='left')
 ax[0].set_ylabel(r'$C_{T,LES}^*$', rotation=0, labelpad=20)
 
 #plot wind `extractability' factor zeta`
@@ -71,9 +72,9 @@ ax[1].set_xlim([-1, 38])
 
 ax[1].set_xticks(range(38))
 ax[1].set_xticklabels(case_id[:20]+case_id[21:30]+case_id[31:40],rotation=90)
-ax[1].set_title(r'(B)', loc='left')
+ax[1].set_title(r'b)', loc='left')
 ax[1].set_ylabel(r'$\zeta_{LES}$', rotation=0, labelpad=20)
 
-plt.tight_layout()
-plt.savefig('KirbyFig11.png', bbox_inches='tight')
-plt.savefig('fig11.pdf', bbox_inches='tight')
+#plt.tight_layout()
+plt.savefig('KirbyFig10.png', bbox_inches='tight')
+plt.savefig('fig10.pdf', bbox_inches='tight')

@@ -7,7 +7,8 @@ plt.style.use("../style.mplstyle")
 
 textwidth = 7
 golden_ratio = 1.61803
-fig, ax = plt.subplots(ncols=2, figsize=[textwidth,textwidth/(2*golden_ratio)], dpi=300)
+cm = 1/2.54
+fig, ax = plt.subplots(ncols=2, figsize=[12*cm,12*cm/(golden_ratio)], dpi=300, layout="constrained")
 
 #load csv file of farm loss factors
 loss_factors = np.genfromtxt('../loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
@@ -40,7 +41,7 @@ r_squared = r2_score(eta_f[index_mask], y_predict)
 ax[0].text(0.1, 0.1, rf'$R^2={round(r_squared,3)}$', ha='left', va='center')
 ax[0].set_ylim([0, 0.6])
 ax[0].set_xlim([0, 1.4])
-ax[0].set_title(r'(A)', loc='left')
+ax[0].set_title(r'a)', loc='left')
 
 #plot linear regression
 x = np.linspace(0.4, 1.3)
@@ -49,6 +50,7 @@ ax[0].plot(x,y)
 
 ax[0].set_ylabel(r'$\eta_f=P_{farm}/P_{\infty}$')
 ax[0].set_xlabel(r'$\eta_w=P_{farm}/P_{1}$')
+ax[0].set_box_aspect(1/golden_ratio)
 
 #plot farm efficiency against non-local efficiency
 ax[1].scatter(eta_nl[index_mask], eta_f[index_mask], c='b', marker='x')
@@ -63,7 +65,7 @@ r_squared = r2_score(eta_f[index_mask], y_predict)
 ax[1].text(0.1, 0.1, rf'$R^2={round(r_squared,3)}$', ha='left', va='center')
 ax[1].set_ylim([0, 0.6])
 ax[1].set_xlim([0, 1.2])
-ax[1].set_title(r'(B)', loc='left')
+ax[1].set_title(r'b)', loc='left')
 
 #plot linear regression
 x = np.linspace(0.2,1)
@@ -71,7 +73,8 @@ y = regr.predict(x.reshape(-1, 1))
 ax[1].plot(x,y)
 
 ax[1].set_xlabel(r'$\eta_{nl}=P_{1}/P_{\infty}$')
+ax[1].set_box_aspect(1/golden_ratio)
 
-plt.tight_layout()
+#plt.tight_layout()
 plt.savefig('KirbyFig3.png', bbox_inches='tight')
 plt.savefig('fig3.pdf', bbox_inches='tight')

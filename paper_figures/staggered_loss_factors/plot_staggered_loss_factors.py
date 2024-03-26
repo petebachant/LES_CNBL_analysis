@@ -6,7 +6,8 @@ plt.style.use("../style.mplstyle")
 
 textwidth = 7
 golden_ratio = 1.61803
-fig, ax = plt.subplots(ncols=2, figsize=[textwidth,textwidth/(2*golden_ratio)], dpi=300)
+cm = 1/2.54
+fig, ax = plt.subplots(ncols=2, figsize=[12*cm,12*cm/(golden_ratio)], dpi=300, layout='constrained')
 
 #load csv file of farm loss factors
 loss_factors = np.genfromtxt('../loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
@@ -36,22 +37,24 @@ index_mask = [27, 24, 21]
 
 tab20 = mpl.colormaps['tab20']
 
-ax[0].bar(np.arange(3)-0.2, eta_f[index_mask], width=0.2, label=r'$\eta_f$', color='k')
 ax[0].bar(np.arange(3), eta_w[index_mask], width=0.2, label=r'$\eta_w$', color=tab20(0))
+ax[0].bar(np.arange(3)-0.2, eta_f[index_mask], width=0.2, label=r'$\eta_f$', color='k')
 ax[0].bar(np.arange(3)+0.2, eta_nl[index_mask], width=0.2, label=r'$\eta_{nl}$', color=tab20(2))
 ax[0].set_ylim([0,1.1])
-ax[0].set_title(r'(A)', loc='left')
-ax[0].set_xticks(np.arange(3), [r'H300-C8-G1', r'H300-C5-G1', r'H300-C2-G1'])
-ax[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=3)
+ax[0].set_title(r'a)', loc='left')
+ax[0].set_xticks(np.arange(3), [r'H300-C8-G1', r'H300-C5-G1', r'H300-C2-G1'], rotation=90)
+ax[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.65), ncol=2)
+ax[0].set_box_aspect(1/golden_ratio)
 
+ax[1].bar(np.arange(3), 1-tsl[index_mask], width=0.2, label=r'$\eta_{TS}$', color=tab20(0))
 ax[1].bar(np.arange(3)-0.2, total_loss[index_mask], width=0.2, label=r'$C_p/C_{p,Betz}$', color='k')
-ax[1].bar(np.arange(3), 1-tsl[index_mask], width=0.2, label=r'$\eta_{ts}$', color=tab20(0))
-ax[1].bar(np.arange(3)+0.2, 1-fsl[index_mask], width=0.2, label=r'$\eta_{fs}$', color=tab20(2))
+ax[1].bar(np.arange(3)+0.2, 1-fsl[index_mask], width=0.2, label=r'$\eta_{FS}$', color=tab20(2))
 ax[1].set_ylim([0,1.1])
-ax[1].set_title(r'(B)', loc='left')
-ax[1].set_xticks(np.arange(3), [r'H300-C8-G1', r'H300-C5-G1', r'H300-C2-G1'])
-ax[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=3)
+ax[1].set_title(r'b)', loc='left')
+ax[1].set_xticks(np.arange(3), [r'H300-C8-G1', r'H300-C5-G1', r'H300-C2-G1'], rotation=90)
+ax[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.65), ncol=2)
+ax[1].set_box_aspect(1/golden_ratio)
 
-plt.tight_layout()
-plt.savefig('KirbyFig13.png', bbox_inches='tight')
-plt.savefig('fig13.pdf', bbox_inches='tight')
+#plt.tight_layout()
+plt.savefig('KirbyFig12.png', bbox_inches='tight')
+plt.savefig('fig12.pdf', bbox_inches='tight')

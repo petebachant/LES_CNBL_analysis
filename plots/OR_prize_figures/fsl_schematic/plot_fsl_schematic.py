@@ -14,7 +14,7 @@ tab10 = mpl.colormaps['tab10']
 cm = 1/2.54
 textwidth = 15
 golden_ratio = 1.61803
-fig, ax = plt.subplots(figsize=[textwidth*cm,textwidth*cm/(1.2*golden_ratio)], dpi=300)
+fig, ax = plt.subplots(figsize=[textwidth*cm,textwidth*cm/(1.5*golden_ratio)], dpi=300)
 
 cp_ratio = np.zeros(50)
 effective_array_density = np.linspace(2,25,50)
@@ -62,9 +62,9 @@ ax.text(12.5, 1, r"Isolated turbine", ha='center', va='bottom')
 ax.annotate("", xy=(10.3, 0.58), xytext=(14.5, 0.7), arrowprops=dict(arrowstyle="->", color='r'))
 ax.annotate("", xy=(10.3, 0.44), xytext=(14.5, 0.2), arrowprops=dict(arrowstyle="->", color='r'))
 
-ax.text(9.75, 0.85, r'Farm-scale'+'\n'+r'efficiency $\eta_{fs}$',
+ax.text(9.75, 0.85, r'Farm-scale'+'\n'+r'efficiency $\eta_{FS}$',
          ha='right', va='center', ma='left')
-ax.text(9.75, 0.56, r'Turbine-scale'+'\n'+r'efficiency $\eta_{ts}$',
+ax.text(9.75, 0.56, r'Turbine-scale'+'\n'+r'efficiency $\eta_{TS}$',
          ha='right', va='top', ma='left')
 ax.text(20, 0.4, r'$P_{Nishino}$', ha='left', va='bottom', ma='left', c=tab10(0))
 ax.text(16.4, 0.85, r'Optimal', ha='center', va='bottom')
@@ -83,6 +83,23 @@ ax2.set_aspect('equal')
 ax2.set_yticks([])
 ax2.set_xticks([])
 
+#x position of turbine no.0
+x_pos_turb = 18e3
+#y position of turbine no.0
+y_pos_turb = 10.2975e3
+
+#add white lines to denote turbine position
+for i in range(10):
+
+    for j in range(16):
+
+        x = x_pos_turb + j*198*5
+        if j%2 == 0:
+            y = y_pos_turb + i*198*5
+        else:
+            y = y_pos_turb + i*198*5 + 198*2.5
+        ax2.plot([x/1000, x/1000], [(y-99)/1000, (y+99)/1000], c='w')
+
 left, bottom, width, height = [0.5, 0.14, 0.2, 0.2]
 ax3 = fig.add_axes([left, bottom, width, height])
 f = h5py.File(f'{path}H500-C5-G4_aligned/stat_main_first_order.h5', 'r')
@@ -96,6 +113,20 @@ ax3.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
 ax3.set_aspect('equal')
 ax3.set_yticks([])
 ax3.set_xticks([])
+
+#x position of turbine no.0
+x_pos_turb = 18e3
+#y position of turbine no.0
+y_pos_turb = 10.545e3
+
+#add white lines to denote turbine position
+for i in range(10):
+
+    for j in range(16):
+
+        x = x_pos_turb + j*198*5
+        y = y_pos_turb + i*198*5
+        ax3.plot([x/1000, x/1000], [(y-99)/1000, (y+99)/1000], c='w')
 
 ax.set_ylim([0, 1.1])
 ax.set_ylabel(r'Farm efficiency $P/P_{\infty}$')

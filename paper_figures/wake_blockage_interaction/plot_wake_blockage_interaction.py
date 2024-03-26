@@ -7,7 +7,8 @@ plt.style.use("../style.mplstyle")
 
 textwidth = 7
 golden_ratio = 1.61803
-fig, ax = plt.subplots(figsize=[0.5*textwidth,0.5*textwidth/(golden_ratio)], dpi=300)
+cm = 1/2.54
+fig, ax = plt.subplots(figsize=[8.3*cm,8.3*cm/(golden_ratio)], dpi=300)
 
 #load csv file of farm loss factors
 loss_factors = np.genfromtxt('../loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)

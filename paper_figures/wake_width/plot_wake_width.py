@@ -12,7 +12,8 @@ plt.style.use("../style.mplstyle")
 
 textwidth = 7
 golden_ratio = 1.61803
-fig, ax = plt.subplots(ncols=2, figsize=[textwidth,textwidth/(2*golden_ratio)], dpi=300)
+cm = 1/2.54
+fig, ax = plt.subplots(ncols=2, figsize=[12*cm,12*cm/(2*golden_ratio)], dpi=300, layout='constrained')
 
 #vertical grid - use cell centered points  
 with open(f'{path}zmesh','r') as file:       
@@ -147,20 +148,21 @@ for plot_no, case_id in enumerate(['H300-C2-G1','H300-C8-G1']):
         wake_growth_rate[k-2] = linreg.slope
 
     ax[plot_no].set_ylim([0.4,1.4])
-    ax[plot_no].text(2.2,1.3,rf'$k^*={round(np.mean(wake_growth_rate),4)}$', ha='left', va='center')
+    ax[plot_no].text(2.2,1.35,rf'$k^*={round(np.mean(wake_growth_rate),4)}$', ha='left', va='top')
 
-ax[0].set_title(r'(A) H300-C2-G1 $\eta_w=50\%$', loc='left')
-ax[1].set_title(r'(B) H300-C8-G1 $\eta_w=100\%$', loc='left')
+ax[0].set_title(r'a) H300-C2-G1 $\eta_w=0.501$', loc='left')
+ax[1].set_title(r'b) H300-C8-G1 $\eta_w=1.00$', loc='left')
 ax[0].set_ylabel(r'$\sigma/D$')
-ax[0].set_xlabel(r'$x/D$')
-ax[1].set_xlabel(r'$x/D$')
+ax[0].set_xlabel(r'$x_i/D$')
+ax[0].set_box_aspect(1/golden_ratio)
+ax[1].set_box_aspect(1/golden_ratio)
+ax[1].set_xlabel(r'$x_i/D$')
 
-plt.tight_layout()
 
 sm = plt.cm.ScalarMappable(cmap=cmap2, norm=plt.Normalize(vmin=3, vmax=16))
-cbar2 = fig.colorbar(sm, ax=ax, ticks=np.linspace(3.5,15.5,14))
-cbar2.set_ticklabels(np.arange(3,17,1))
+cbar2 = fig.colorbar(sm, ax=ax, ticks=np.linspace(3.5,14.5,7))
+cbar2.set_ticklabels(np.arange(3,17,2))
 cbar2.set_label(r'Turbine row number')
 
-plt.savefig('KirbyFig8.png', bbox_inches='tight')
-plt.savefig('fig8.pdf', bbox_inches='tight')
+plt.savefig('KirbyFig7.png', bbox_inches='tight')
+plt.savefig('fig7.pdf', bbox_inches='tight')

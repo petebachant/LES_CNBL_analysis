@@ -10,7 +10,8 @@ plt.style.use("../style.mplstyle")
 
 textwidth = 7
 golden_ratio = 1.61803
-fig, ax = plt.subplots(nrows=2, figsize=[textwidth,textwidth/(golden_ratio)], dpi=300)
+cm = 1/2.54
+fig, ax = plt.subplots(nrows=2, figsize=[12*cm,12*cm/(golden_ratio)], dpi=300, layout='constrained')
 
 #open LES data for H300-C2-G1
 f = h5py.File(f'{path}H300-C2-G1/stat_main_first_order.h5', 'r')
@@ -42,10 +43,11 @@ pressure_farm_average = np.mean(pressure_farm, axis=1)
 pressure_perturbation = pressure_farm_average-pressure_farm_average[0,:]
 ax[0].pcolormesh(x[x_index_mask]/1000, z[:300], pressure_perturbation.T, shading='nearest',
                     cmap=mpl.colormaps['RdBu'], vmin=-15, vmax=15, rasterized=True)
-ax[0].set_title(r'(A) H300-C2-G1', loc='left')
-ax[0].text(1,1.25, r'$\eta_w=P_{farm}/P_1=50\%$', ha='left', va='center')
-ax[0].text(1,1, r'$\eta_{nl}=P_1/P_{\infty}=86\%$', ha='left', va='center')
+ax[0].set_title(r'a) H300-C2-G1', loc='left')
+ax[0].text(1,1.45, r'$\eta_w=P_{farm}/P_1=0.501$'+'\n'+r'$\eta_{nl}=P_1/P_{\infty}=0.857$', ha='left', va='top')
+#ax[0].text(1,1, r'$\eta_{nl}=P_1/P_{\infty}=0.857$', ha='left', va='center')
 ax[0].set_ylabel(r'$z$ (km)')
+ax[0].set_box_aspect(1/(2*golden_ratio))
 #plot turbine locations
 for i in range(16):
     ax[0].plot([18+i*5*0.198, 18+i*5*0.198], [21/1000, 217/1000], c='k')
@@ -64,16 +66,17 @@ pressure_farm_average = np.mean(pressure_farm, axis=1)
 pressure_perturbation = pressure_farm_average-pressure_farm_average[0,:]
 pcm = ax[1].pcolormesh(x[x_index_mask]/1000, z[:300], pressure_perturbation.T, shading='nearest',
                     cmap=mpl.colormaps['RdBu'], vmin=-20, vmax=20, rasterized=True)
-ax[1].set_title(r'(B) H300-C8-G1', loc='left')
-ax[1].text(1,1.25, r'$\eta_w=P_{farm}/P_1=100\%$', ha='left', va='center')
-ax[1].text(1,1, r'$\eta_{nl}=P_1/P_{\infty}=44\%$', ha='left', va='center')
+ax[1].set_title(r'b) H300-C8-G1', loc='left')
+ax[1].text(1,1.45, r'$\eta_w=P_{farm}/P_1=1.00$'+'\n'+r'$\eta_{nl}=P_1/P_{\infty}=0.437$', ma='left', ha='left', va='top')
+#ax[1].text(1,1, r'$\eta_{nl}=P_1/P_{\infty}=0.437$', ha='left', va='center')
 ax[1].set_ylabel(r'$z$ (km)')
 ax[1].set_xlabel(r'$x$ (km)')
+ax[1].set_box_aspect(1/(2*golden_ratio))
 #plot turbine locations
 for i in range(16):
     ax[1].plot([18+i*5*0.198, 18+i*5*0.198], [21/1000, 217/1000], c='k')
 
-plt.tight_layout()
+#plt.tight_layout()
 
 cbar = fig.colorbar(pcm, ax=ax)
 cbar.set_label(r'$(\langle \overline p \rangle_f - \langle \overline p_{in} \rangle_f)/\rho_0$ (m$^2$s$^{-2}$)')

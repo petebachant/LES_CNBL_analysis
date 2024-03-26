@@ -11,7 +11,8 @@ plt.style.use("../style.mplstyle")
 
 textwidth = 7
 golden_ratio = 1.61803
-fig, ax = plt.subplots(figsize=[textwidth,textwidth/(golden_ratio)], dpi=300)
+cm = 1/2.54
+fig, ax = plt.subplots(figsize=[12*cm,12*cm/(golden_ratio)], dpi=300)
 
 #load csv file of farm loss factors
 loss_factors = np.genfromtxt('../loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
@@ -73,42 +74,48 @@ plt.scatter(4.46, total_loss[43], marker='x', c='r', zorder=1)
 
 left, bottom, width, height = [0.675, 0.5, 0.2, 0.2]
 ax2 = fig.add_axes([left, bottom, width, height])
-f = h5py.File(f'{path}H500-C5-G4/stat_main_first_order.h5', 'r')
-u = f['u']
+#f = h5py.File(f'{path}H500-C5-G4/stat_main_first_order.h5', 'r')
+#u = f['u']
+u = np.load('H500-C5-G4.npy')
 x = 31.25*np.arange(1600)
 y = 21.74*np.arange(1380)
 ax2.set_xlim([25,30])
 ax2.set_ylim([12.5,17.5])
-ax2.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
+ax2.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u,
                     shading='nearest', vmin=2, vmax=10, rasterized=True)
+#np.save('H500-C5-G4.npy', u[450:1150,340:1050,23].T)
 ax2.set_aspect('equal')
 ax2.set_yticks([])
 ax2.set_xticks([])
 
 left, bottom, width, height = [0.675, 0.14, 0.2, 0.2]
 ax3 = fig.add_axes([left, bottom, width, height])
-f = h5py.File(f'{path}H500-C5-G4_aligned/stat_main_first_order.h5', 'r')
-u = f['u']
+#f = h5py.File(f'{path}H500-C5-G4_aligned/stat_main_first_order.h5', 'r')
+#u = f['u']
+u = np.load('H500-C5-G4_aligned.npy')
 x = 31.25*np.arange(1600)
 y = 21.74*np.arange(1380)
 ax3.set_xlim([25,30])
 ax3.set_ylim([12.5,17.5])
-ax3.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
+ax3.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u,
                     shading='nearest', vmin=2, vmax=10, rasterized=True)
+#np.save('H500-C5-G4_aligned.npy', u[450:1150,340:1050,23].T)
 ax3.set_aspect('equal')
 ax3.set_yticks([])
 ax3.set_xticks([])
 
 left, bottom, width, height = [0.2, 0.2, 0.2, 0.2]
 ax4 = fig.add_axes([left, bottom, width, height])
-f = h5py.File(f'{path}H500-C5-G4_double_spacing/stat_main_first_order.h5', 'r')
-u = f['u']
+#f = h5py.File(f'{path}H500-C5-G4_double_spacing/stat_main_first_order.h5', 'r')
+#u = f['u']
+u = np.load('H500-C5-G4_double_spacing.npy')
 x = 31.25*np.arange(1600)
 y = 21.74*np.arange(1380)
 ax4.set_xlim([25,30])
 ax4.set_ylim([12.5,17.5])
-ax4.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
+ax4.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u,
                     shading='nearest', vmin=2, vmax=10, rasterized=True)
+#np.save('H500-C5-G4_double_spacing.npy', u[450:1150,340:1050,23].T)
 ax4.set_aspect('equal')
 ax4.set_yticks([])
 ax4.set_xticks([])
@@ -118,18 +125,18 @@ ax.annotate("", xy=(18.1, 0.325), xytext=(19.9, 0.2), arrowprops=dict(arrowstyle
 ax.annotate("", xy=(4.5, 0.7), xytext=(6.5, 0.425), arrowprops=dict(arrowstyle="->", color='r'))
 ax.text(12.5, 1, r"Isolated turbine", ha='center', va='bottom')
 tab10 = mpl.colormaps['tab10']
-ax.annotate("", xy=(17.5, 0.335), xytext=(17.5, 0.44), arrowprops=dict(arrowstyle="<->"), color=tab10(1), zorder=0)
-ax.annotate("", xy=(17.5, 0.42), xytext=(17.5, 1), arrowprops=dict(arrowstyle="<->"), color=tab10(2), zorder=0)
+ax.annotate("", xy=(17.5, 0.335), xytext=(17.5, 0.44), arrowprops=dict(arrowstyle="->"), color=tab10(1), zorder=0)
+ax.annotate("", xy=(17.5, 0.42), xytext=(17.5, 1), arrowprops=dict(arrowstyle="->"), color=tab10(2), zorder=0)
 
-ax.text(13.75, 0.75, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$FSL$',
-         ha='left', va='center', ma='left')
-ax.text(13.75, 0.36, r'Turbine-scale'+'\n'+r'losses'+'\n'+r'$TSL$', 
-        ha='left', va='center', ma='left')
+ax.text(12.5, 0.75, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$FSL$',
+         ha='left', va='top', ma='left')
+ax.text(11.5, 0.42, r'Turbine-scale'+'\n'+r'losses'+'\n'+r'$TSL$', 
+        ha='left', va='top', ma='left')
 ax.text(3, 0.9, r"$C_{p,Nishino}/C_{p,Betz}$" +"\n"+r"($\zeta=38.1$, $\gamma=2.0$, $C_T'=1.94$)", ha='left', va='center', ma='left', c=tab10(0))
 
 #plt.tight_layout()
 ax.set_ylim([0, 1.1])
 ax.set_xlabel(r'$\lambda/C_{f0}$')
 ax.set_ylabel(r'$C_p/C_{p,Betz}$')
-plt.savefig('KirbyFig12.png', bbox_inches='tight')
-plt.savefig('fig12.pdf', bbox_inches='tight')
+plt.savefig('KirbyFig11.png', bbox_inches='tight')
+plt.savefig('fig11.pdf', bbox_inches='tight')
