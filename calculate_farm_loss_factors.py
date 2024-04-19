@@ -175,6 +175,7 @@ for case_no in range(43, 45):
     force_hubh = force*np.cos((yaw-yaw_mean)*np.pi/180)
     plt.plot(time[:], np.mean(force_hubh[:,:],axis=1))
     #average turbine force over last 1.5hrs of simulation
+    print(np.shape(force_hubh[:,:]))
     force_ave = np.mean(force_hubh[time[:]>75600,:])
     plt.plot([75600,81000],[force_ave,force_ave])
     plt.savefig('plots/turbine_force.png')

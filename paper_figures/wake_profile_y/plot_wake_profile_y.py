@@ -56,9 +56,9 @@ pcm = ax[0,0].pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050
 ax[0,0].set_xlim([15,35])
 ax[0,0].set_ylim([7.5,22.5])
 ax[0,0].set_aspect('equal')
-ax[0,0].set_ylabel(r'$y$ (km)')
-ax[0,0].set_xlabel(r'$x$ (km)')
-ax[0,0].set_title(r'a)', loc='left')
+ax[0,0].set_ylabel(r'$y$ [km]')
+ax[0,0].set_xlabel(r'$x$ [km]')
+ax[0,0].set_title(r'(a)', loc='left')
 
 ax[0,0].plot([27.702, 28.692, 28.692, 27.702, 27.702], [10.05, 10.05, 19.95, 19.95, 10.05], c='r')
 
@@ -67,8 +67,8 @@ ax[0,1].pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T
 ax[0,1].set_xlim([27.702, 28.692])
 ax[0,1].set_ylim([19.2075-0.37125,19.2075+0.37125])
 ax[0,1].set_aspect('equal')
-ax[0,1].set_xlabel(r'$x$ (km)')
-ax[0,1].set_title(r'b)', loc='left')
+ax[0,1].set_xlabel(r'$x$ [km]')
+ax[0,1].set_title(r'(b)', loc='left')
 #find turbine yaw
 yaw_turb = yaw[109]
 yaw_turb_rad = np.pi*yaw[109]/180
@@ -83,7 +83,7 @@ ax[0,1].text(27.9, 19, r'$i$ th turbine', ha='left', va='center', c='w')
 plt.savefig('KirbyFig6.png', bbox_inches='tight')
 plt.savefig('fig6.pdf', bbox_inches='tight')
 
-ax[1,0].set_title(r'c) H300-C2-G1 $\eta_w=0.501$', loc='left')
+ax[1,0].set_title(r'(c) H300-C2-G1 $\eta_w=0.501$', loc='left')
 
 #create interpolating function for gridded data
 print('Begin interpolation')
@@ -159,15 +159,15 @@ for i, distance in enumerate(wake_distance):
 
 ax[1,0].set_xlim([0,0.8])
 ax[1,0].set_ylim([-1,1])
-ax[1,0].set_ylabel(r'$y_i/D$')
+ax[1,0].set_ylabel(r'$y_i/D$ [-]')
 patch = mpl.patches.Rectangle((0,-0.5), 0.8, 1, color='grey', alpha=0.2)
 ax[1,0].add_patch(patch)
 ax[1,0].set_box_aspect(1/golden_ratio)
 
-ax[1,1].set_title(r'd) H300-C2-G1 $\eta_w=0.501$', loc='left')
+ax[1,1].set_title(r'(d) H300-C2-G1 $\eta_w=0.501$', loc='left')
 ax[1,1].set_xlim([0,0.8])
 ax[1,1].set_ylim([0,2])
-ax[1,1].set_ylabel(r'$z/D$')
+ax[1,1].set_ylabel(r'$z/D$ [-]')
 patch = mpl.patches.Rectangle((0,0.17647), 0.8, 1, color='grey', alpha=0.2)
 ax[1,1].add_patch(patch)
 ax[1,1].set_box_aspect(1/golden_ratio)
@@ -192,7 +192,7 @@ yaw = aux['yaw']
 time = aux['time']
 yaw = np.mean(yaw[time[:]>75600,:],axis=0)
 
-ax[2,0].set_title(r'e) H300-C8-G1 $\eta_w=1.00$', loc='left')
+ax[2,0].set_title(r'(e) H300-C8-G1 $\eta_w=1.00$', loc='left')
 
 #create interpolating function for gridded data
 print('Begin interpolation')
@@ -259,34 +259,34 @@ for i, distance in enumerate(wake_distance):
 
 ax[2,0].set_xlim([0,0.8])
 ax[2,0].set_ylim([-1,1])
-ax[2,0].set_xlabel(r'$\frac{u_{\infty,hubh}-U}{u_{\infty,hubh}}$')
-ax[2,0].set_ylabel(r'$y_i/D$')
+ax[2,0].set_xlabel(r'$\frac{u_{\infty,hubh}-U}{u_{\infty,hubh}}$ [-]')
+ax[2,0].set_ylabel(r'$y_i/D$ [-]')
 patch = mpl.patches.Rectangle((0,-0.5), 0.8, 1, color='grey', alpha=0.2)
 ax[2,0].add_patch(patch)
 ax[2,0].set_box_aspect(1/golden_ratio)
 
-ax[2,1].set_title(r'f) H300-C8-G1 $\eta_w=1.00$', loc='left')
+ax[2,1].set_title(r'(f) H300-C8-G1 $\eta_w=1.00$', loc='left')
 ax[2,1].set_xlim([0,0.8])
 ax[2,1].set_ylim([0,2])
-ax[2,1].set_ylabel(r'$z/D$')
+ax[2,1].set_ylabel(r'$z/D$ [-]')
 patch = mpl.patches.Rectangle((0,0.17647), 0.8, 1, color='grey', alpha=0.2)
 ax[2,1].add_patch(patch)
-ax[2,1].set_xlabel(r'$\frac{u_{\infty}-U}{u_{\infty,hubh}}$')
+ax[2,1].set_xlabel(r'$\frac{u_{\infty}-U}{u_{\infty,hubh}}$ [-]')
 ax[2,1].set_box_aspect(1/golden_ratio)
 
 plt.subplots_adjust(wspace=0.4, hspace=0.4)
 
 cbar = fig.colorbar(pcm, ax=ax[0,:])
-cbar.set_label(r'$u$ (ms$^{-1}$)')
+cbar.set_label(r'$u$ [ms$^{-1}$]')
 
 sm = plt.cm.ScalarMappable(cmap=cmap1, norm=plt.Normalize(vmin=2, vmax=9))
 cbar2 = fig.colorbar(sm, ax=ax[1,:], ticks=np.linspace(2.5,8.5,8))
 cbar2.set_ticklabels(np.linspace(2,9,8))
-cbar2.set_label(r'$x_i/D$')
+cbar2.set_label(r'$x_i/D$ [-]')
 
 cbar3 = fig.colorbar(sm, ax=ax[2,:], ticks=np.linspace(2.5,8.5,8))
 cbar3.set_ticklabels(np.linspace(2,9,8))
-cbar3.set_label(r'$x_i/D$')
+cbar3.set_label(r'$x_i/D$ [-]')
 
 #plt.tight_layout()
 

@@ -32,7 +32,11 @@ index_mask = [i != 20 and i != 30 for i in range(44)]
 
 x = np.arange(38)
 
-#plot `internal' turbine thrust coefficient`
+#plot `internal' turbine thrust coefficient
+ax[0].grid(which='major', axis='y', color='#DDDDDD', linewidth=0.8)
+ax[0].grid(which='minor', axis='y', color='#EEEEEE', linewidth=0.5)
+ax[0].minorticks_on()
+ax[0].tick_params(axis='x', which='minor', bottom=False)
 ax[0].scatter(0, ctstar[0], c='k')
 ax[0].scatter(x[1:10], ctstar[index_mask][1:10], c=tab10(0*np.ones(9).astype(int), alpha=(10-np.arange(1,10)%10)/10), edgecolor='k')
 ax[0].scatter(x[5], ctstar[40], c='k', marker='x')
@@ -53,10 +57,15 @@ ax[0].set_xticks(range(38))
 ax[0].set_xticklabels([])
 ax[0].set_ylim([0, 1.2])
 ax[0].set_xlim([-1, 38])
-ax[0].set_title(r'a)', loc='left')
-ax[0].set_ylabel(r'$C_{T,LES}^*$', rotation=0, labelpad=20)
+ax[0].set_title(r'(a)', loc='left')
+ax[0].set_ylabel(r'$C_{T,LES}^*$ [-]')
+ax[0].set_axisbelow(True)
 
-#plot wind `extractability' factor zeta`
+#plot wind `extractability' factor zeta
+ax[1].grid(which='major', axis='y', color='#DDDDDD', linewidth=0.8)
+ax[1].grid(which='minor', axis='y', color='#EEEEEE', linewidth=0.5)
+ax[1].minorticks_on()
+ax[1].tick_params(axis='x', which='minor', bottom=False)
 ax[1].scatter(0, zeta[0], c='k')
 ax[1].scatter(x[1:10], zeta[index_mask][1:10], c=tab10(0*np.ones(9).astype(int), alpha=(10-np.arange(1,10)%10)/10), edgecolor='k')
 ax[1].scatter(x[5], zeta[40], c='k', marker='x')
@@ -72,8 +81,9 @@ ax[1].set_xlim([-1, 38])
 
 ax[1].set_xticks(range(38))
 ax[1].set_xticklabels(case_id[:20]+case_id[21:30]+case_id[31:40],rotation=90)
-ax[1].set_title(r'b)', loc='left')
-ax[1].set_ylabel(r'$\zeta_{LES}$', rotation=0, labelpad=20)
+ax[1].set_title(r'(b)', loc='left')
+ax[1].set_ylabel(r'$\zeta_{LES}$ [-]')
+ax[1].set_axisbelow(True)
 
 #plt.tight_layout()
 plt.savefig('KirbyFig10.png', bbox_inches='tight')

@@ -46,9 +46,9 @@ wind_angle_deg = 180*wind_angle/np.pi
 ax[0].pcolormesh(x[x_index_mask]/1000, y/1000, wind_angle_deg.T, shading='nearest', 
                     cmap=mpl.colormaps['RdBu'], vmin=-10, vmax=10, rasterized=True)
 
-ax[0].set_ylabel(r'$y$ (km)')
-ax[0].set_xlabel(r'$x$ (km)')
-ax[0].set_title(r'a) H300-C2-G1', loc='left')
+ax[0].set_ylabel(r'$y$ [km]')
+ax[0].set_xlabel(r'$x$ [km]')
+ax[0].set_title(r'(a) H300-C2-G1', loc='left')
 ax[0].text(1,25, r'$\eta_w=0.501$', ha='left', va='center', ma='center')
 ax[0].set_aspect('equal')
 
@@ -66,15 +66,15 @@ wind_angle_deg = 180*wind_angle/np.pi
 
 pcm = ax[1].pcolormesh(x[x_index_mask]/1000, y/1000, wind_angle_deg.T, shading='nearest', 
                     cmap=mpl.colormaps['RdBu'], vmin=-10, vmax=10, rasterized=True)
-ax[1].set_xlabel(r'$x$ (km)')
-ax[1].set_title(r'b) H300-C8-G1', loc='left')
+ax[1].set_xlabel(r'$x$ [km]')
+ax[1].set_title(r'(b) H300-C8-G1', loc='left')
 ax[1].text(1,25, r'$\eta_w=1.00$', ha='left', va='center', ma='center')
 ax[1].set_aspect('equal')
 
 #plt.tight_layout()
 
 cbar = fig.colorbar(pcm, ax=ax)
-cbar.set_label(r'$\gamma$ (deg.)')
+cbar.set_label(r'$\gamma$ [deg.]')
 
 plt.savefig('KirbyFig4.png', bbox_inches='tight')
 plt.savefig('fig4.pdf', bbox_inches='tight')

@@ -38,13 +38,13 @@ plt.text(1,1.2, rf'$R^2={round(r_squared,3)}$', ha='right', va='top')
 #plot linear regression
 x = np.linspace(0.2,1)
 y = regr.predict(x.reshape(-1, 1))
-plt.plot(x,y)
+plt.plot(x,y,c='k')
 
 plt.xlim([0,1.1])
 plt.ylim([0,1.4])
 
 plt.tight_layout()
-plt.ylabel(r'$\eta_{w}=P_{farm}/P_1$')
-plt.xlabel(r'$\eta_{nl}=P_1/P_{\infty}$')
+plt.ylabel(r'$\eta_{w}$ [-]')
+plt.xlabel(r'$\eta_{nl}$ [-]')
 plt.savefig('KirbyFig1.png', bbox_inches='tight')
 plt.savefig('fig1.pdf', bbox_inches='tight')

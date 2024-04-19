@@ -48,11 +48,11 @@ ax[0].set_xlim([0, 0.125])
 #plot linear regression
 x = np.linspace(0.07, 0.105)
 y = regr.predict(x.reshape(-1, 1))
-ax[0].plot(x,y)
+ax[0].plot(x,y,c='k')
 
-ax[0].set_ylabel(r'$\eta_f=P_{farm}/P_{\infty}$')
-ax[0].set_xlabel(r'$k^*$')
-ax[0].set_title(r'a)', loc='left')
+ax[0].set_ylabel(r'$\eta_f$ [-]')
+ax[0].set_xlabel(r'$k^*$ [-]')
+ax[0].set_title(r'(a)', loc='left')
 ax[0].set_box_aspect(1/golden_ratio)
 
 #plot farm efficiency against non-local efficiency
@@ -74,11 +74,11 @@ ax[1].set_xlim([0, 0.125])
 #plot linear regression
 x = np.linspace(0.07, 0.105)
 y = regr.predict(x.reshape(-1, 1))
-ax[1].plot(x,y)
+ax[1].plot(x,y,c='k')
 
-ax[1].set_ylabel(r'$\eta_w=P_{farm}/P_{1}$')
-ax[1].set_xlabel(r'$k^*$')
-ax[1].set_title(r'b)', loc='left')
+ax[1].set_ylabel(r'$\eta_w$ [-]')
+ax[1].set_xlabel(r'$k^*$ [-]')
+ax[1].set_title(r'(b)', loc='left')
 ax[1].set_box_aspect(1/golden_ratio)
 
 #plt.tight_layout()

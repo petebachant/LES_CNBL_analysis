@@ -150,13 +150,13 @@ for plot_no, case_id in enumerate(['H300-C2-G1','H300-C8-G1']):
     ax[plot_no].set_ylim([0.4,1.4])
     ax[plot_no].text(2.2,1.35,rf'$k^*={round(np.mean(wake_growth_rate),4)}$', ha='left', va='top')
 
-ax[0].set_title(r'a) H300-C2-G1 $\eta_w=0.501$', loc='left')
-ax[1].set_title(r'b) H300-C8-G1 $\eta_w=1.00$', loc='left')
-ax[0].set_ylabel(r'$\sigma/D$')
-ax[0].set_xlabel(r'$x_i/D$')
+ax[0].set_title(r'(a) H300-C2-G1 $\eta_w=0.501$', loc='left')
+ax[1].set_title(r'(b) H300-C8-G1 $\eta_w=1.00$', loc='left')
+ax[0].set_ylabel(r'$\sigma/D$ [-]')
+ax[0].set_xlabel(r'$x_i/D$ [-]')
 ax[0].set_box_aspect(1/golden_ratio)
 ax[1].set_box_aspect(1/golden_ratio)
-ax[1].set_xlabel(r'$x_i/D$')
+ax[1].set_xlabel(r'$x_i/D$ [-]')
 
 
 sm = plt.cm.ScalarMappable(cmap=cmap2, norm=plt.Normalize(vmin=3, vmax=16))

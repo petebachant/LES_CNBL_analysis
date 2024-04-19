@@ -34,9 +34,9 @@ ax[0].scatter(1-tsl[index_mask], total_loss[index_mask], c='b', marker='x')
 ax[0].set_ylim([0, 0.6])
 ax[0].set_xlim([0, 1.2])
 
-ax[0].set_ylabel(r'$C_p/C_{p,Betz}$')
-ax[0].set_xlabel(r'$\eta_{TS}$')
-ax[0].set_title(r'a)', loc='left')
+ax[0].set_ylabel(r'$C_p/C_{p,Betz}$ [-]')
+ax[0].set_xlabel(r'$\eta_{TS}$ [-]')
+ax[0].set_title(r'(a)', loc='left')
 ax[0].set_box_aspect(1/golden_ratio)
 
 #plot farm efficiency against non-local efficiency
@@ -52,15 +52,15 @@ r_squared = r2_score(total_loss[index_mask], y_predict)
 ax[1].text(0.05, 0.5, rf'$R^2={round(r_squared,3)}$', ha='left', va='center')
 ax[1].set_ylim([0, 0.6])
 ax[1].set_xlim([0, 0.6])
-ax[1].set_title(r'b)', loc='left')
+ax[1].set_title(r'(b)', loc='left')
 ax[1].set_box_aspect(1/golden_ratio)
 
 #plot linear regression
 x = np.linspace(0.25,0.5)
 y = regr.predict(x.reshape(-1, 1))
-ax[1].plot(x,y)
+ax[1].plot(x,y,c='k')
 
-ax[1].set_xlabel(r'$\eta_{FS}$')
+ax[1].set_xlabel(r'$\eta_{FS}$ [-]')
 
 #plt.tight_layout()
 plt.savefig('KirbyFig13.png', bbox_inches='tight')

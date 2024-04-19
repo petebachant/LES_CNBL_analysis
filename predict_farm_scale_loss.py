@@ -45,7 +45,7 @@ M_shapiro = M_shapiro + 1
 M_shapiro = M_shapiro**(-1)
 ctstar = 0.88 / (M_shapiro**2)
 
-for case_no in range(43,45):
+for case_no in range(44,45):
 
     case_id = loss_factors[case_no][0]
     print(case_id)
@@ -127,6 +127,7 @@ for case_no in range(43,45):
     tau_t0 = interp_uw(h_f)
     #shear stress ratio tau_t0/tau_w0
     shear_ratio = tau_t0/tau_w0
+    print(shear_ratio)
 
     #################################
     # 3. Calculate C_{p,Nishino}

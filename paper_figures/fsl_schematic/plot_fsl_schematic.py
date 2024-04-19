@@ -128,7 +128,7 @@ tab10 = mpl.colormaps['tab10']
 ax.annotate("", xy=(17.5, 0.335), xytext=(17.5, 0.44), arrowprops=dict(arrowstyle="->"), color=tab10(1), zorder=0)
 ax.annotate("", xy=(17.5, 0.42), xytext=(17.5, 1), arrowprops=dict(arrowstyle="->"), color=tab10(2), zorder=0)
 
-ax.text(12.5, 0.75, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$FSL$',
+ax.text(11.5, 0.75, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$FSL$',
          ha='left', va='top', ma='left')
 ax.text(11.5, 0.42, r'Turbine-scale'+'\n'+r'losses'+'\n'+r'$TSL$', 
         ha='left', va='top', ma='left')
@@ -136,7 +136,7 @@ ax.text(3, 0.9, r"$C_{p,Nishino}/C_{p,Betz}$" +"\n"+r"($\zeta=38.1$, $\gamma=2.0
 
 #plt.tight_layout()
 ax.set_ylim([0, 1.1])
-ax.set_xlabel(r'$\lambda/C_{f0}$')
-ax.set_ylabel(r'$C_p/C_{p,Betz}$')
+ax.set_xlabel(r'$\lambda/C_{f0}$ [-]')
+ax.set_ylabel(r'$C_p/C_{p,Betz}$ [-]')
 plt.savefig('KirbyFig11.png', bbox_inches='tight')
 plt.savefig('fig11.pdf', bbox_inches='tight')
