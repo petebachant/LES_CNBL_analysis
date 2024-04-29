@@ -123,16 +123,16 @@ ax4.set_xticks([])
 ax.annotate("", xy=(18.1, 0.46), xytext=(19.9, 0.7), arrowprops=dict(arrowstyle="->", color='r'))
 ax.annotate("", xy=(18.1, 0.325), xytext=(19.9, 0.2), arrowprops=dict(arrowstyle="->", color='r'))
 ax.annotate("", xy=(4.5, 0.7), xytext=(6.5, 0.425), arrowprops=dict(arrowstyle="->", color='r'))
-ax.text(12.5, 1, r"Isolated turbine", ha='center', va='bottom')
+ax.text(12.5, 1, r"Isolated turbines", ha='center', va='bottom')
 tab10 = mpl.colormaps['tab10']
-ax.annotate("", xy=(17.5, 0.335), xytext=(17.5, 0.44), arrowprops=dict(arrowstyle="->"), color=tab10(1), zorder=0)
+ax.annotate("", xy=(17.5, 0.3175), xytext=(17.5, 0.44), arrowprops=dict(arrowstyle="->"), color=tab10(1), zorder=0)
 ax.annotate("", xy=(17.5, 0.42), xytext=(17.5, 1), arrowprops=dict(arrowstyle="->"), color=tab10(2), zorder=0)
 
 ax.text(11.5, 0.75, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$FSL$',
          ha='left', va='top', ma='left')
 ax.text(11.5, 0.42, r'Turbine-scale'+'\n'+r'losses'+'\n'+r'$TSL$', 
         ha='left', va='top', ma='left')
-ax.text(3, 0.9, r"$C_{p,Nishino}/C_{p,Betz}$" +"\n"+r"($\zeta=38.1$, $\gamma=2.0$, $C_T'=1.94$)", ha='left', va='center', ma='left', c=tab10(0))
+ax.text(3, 0.9, r"$C_{p,Nishino}/C_{p,Betz}$" + '\n' +r"($\zeta=38.1$)", ha='left', va='center', ma='left', c=tab10(0))
 
 #plt.tight_layout()
 ax.set_ylim([0, 1.1])

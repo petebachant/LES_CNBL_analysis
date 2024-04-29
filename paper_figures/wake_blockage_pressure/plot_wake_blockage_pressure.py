@@ -79,7 +79,7 @@ for i in range(16):
 #plt.tight_layout()
 
 cbar = fig.colorbar(pcm, ax=ax)
-cbar.set_label(r'$(\langle \overline p \rangle_f - \langle \overline p_{in} \rangle_f)/\rho_0$ [m$^2$s$^{-2}$]')
+cbar.set_label(r'$(\langle \overline p \rangle_f - \langle \overline p_{in} \rangle_f)/\rho_0$ [m$^2$ s$^{-2}$]')
 
 plt.savefig('KirbyFig2.png', bbox_inches='tight')
 plt.savefig('fig2.pdf', bbox_inches='tight')

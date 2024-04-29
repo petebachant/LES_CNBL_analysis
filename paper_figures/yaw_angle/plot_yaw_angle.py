@@ -74,7 +74,7 @@ ax[1].set_aspect('equal')
 #plt.tight_layout()
 
 cbar = fig.colorbar(pcm, ax=ax)
-cbar.set_label(r'$\gamma$ [deg.]')
+cbar.set_label(r'$\phi$ [deg.]')
 
 plt.savefig('KirbyFig4.png', bbox_inches='tight')
 plt.savefig('fig4.pdf', bbox_inches='tight')

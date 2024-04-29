@@ -14,7 +14,7 @@ import scipy.optimize as opt
 import matplotlib.pyplot as plt
 
 #path variable to change!
-path = '/mnt/c/Users/trin3517/Documents/PhD/Year 4/Research plots and presentations/LES_data/'
+path = '/mnt/d/LES_data/'
 
 #load LES data from precursor and single turbine simulations
 LES_data = np.genfromtxt('LES_data.csv', delimiter=',', dtype=None, names=True, encoding=None)
@@ -22,7 +22,7 @@ LES_data = np.genfromtxt('LES_data.csv', delimiter=',', dtype=None, names=True, 
 #load csv file to store results
 loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
-for case_no in range(43, 45):
+for case_no in range(30,40):
 
     case_id = LES_data[case_no][0]
     u_star0 = LES_data[case_no][1]
@@ -222,28 +222,8 @@ for case_no in range(43, 45):
     u = np.mean(interp_u(pos))
     v = np.mean(interp_v(pos))
 
-    #calculate pressure 2.5D behind farm
-    x_farm = 33.345e3
-    y_farm = np.linspace(10.050e3,19.950e3,n_y)
-    z_farm = 119
-    xg, yg, zg = np.meshgrid(x_farm, y_farm, z_farm)
-    pos = np.zeros((n_y,3))
-    pos[:,0] = xg.flatten()
-    pos[:,1] = yg.flatten()
-    pos[:,2] = zg.flatten()
-    p_rear = np.mean(interp_p(pos))
-    #calculate pressure 2.5D in front farm
-    x_farm = 17.505e3
-    y_farm = np.linspace(10.050e3,19.950e3,n_y)
-    z_farm = 119
-    xg, yg, zg = np.meshgrid(x_farm, y_farm, z_farm)
-    pos = np.zeros((n_y,3))
-    pos[:,0] = xg.flatten()
-    pos[:,1] = yg.flatten()
-    pos[:,2] = zg.flatten()
-    p_front = np.mean(interp_p(pos))
-    p_farm = p_front - p_rear
-    loss_factors[case_no][11] = p_farm
+    #save farm-averaged mean absolute yaw angle
+    loss_factors[case_no][11] = np.mean(np.abs(yaw_mean))
 
     #convert yaw angle to radians
     yaw_mean_rad = np.pi*np.mean(yaw_mean)/180

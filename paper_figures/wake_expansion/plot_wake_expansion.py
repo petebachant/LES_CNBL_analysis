@@ -43,7 +43,7 @@ y_predict = regr.predict(k_star[index_mask].reshape(-1, 1))
 r_squared = r2_score(eta_f[index_mask], y_predict)
 ax[0].text(0.01, 0.1, rf'$R^2={round(r_squared,3)}$', ha='left', va='center')
 ax[0].set_ylim([0, 0.6])
-ax[0].set_xlim([0, 0.125])
+ax[0].set_xlim([0, 0.12])
 
 #plot linear regression
 x = np.linspace(0.07, 0.105)
@@ -66,10 +66,10 @@ regr.fit(k_star[index_mask].reshape(-1, 1), eta_w[index_mask].reshape(-1, 1))
 y_predict = regr.predict(k_star[index_mask].reshape(-1, 1))
 r_squared = r2_score(eta_w[index_mask], y_predict)
 ax[1].text(0.01, 0.2, rf'$R^2={round(r_squared,3)}$', ha='left', va='center')
-ax[1].text(0.12, 1, rf'Faster' +'\n'+ r'recovery', ha='right', va='center', ma='left')
-ax[1].text(0.06, 1, rf'Slower' +'\n'+ r'recovery', ha='right', va='center', ma='left')
+#ax[1].text(0.12, 1, rf'Faster' +'\n'+ r'recovery', ha='right', va='center', ma='left')
+#ax[1].text(0.06, 1, rf'Slower' +'\n'+ r'recovery', ha='right', va='center', ma='left')
 ax[1].set_ylim([0, 1.2])
-ax[1].set_xlim([0, 0.125])
+ax[1].set_xlim([0, 0.12])
 
 #plot linear regression
 x = np.linspace(0.07, 0.105)

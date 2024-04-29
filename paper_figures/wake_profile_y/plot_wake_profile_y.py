@@ -106,7 +106,7 @@ wake_span = np.linspace(-2*198, 2*198, 80)
 wake_yslice = np.zeros((10,8,80))
 wake_zslice = np.zeros((10,8,100))
 
-cmap1 = plt.get_cmap('cividis', 8)
+cmap1 = plt.get_cmap('plasma', 8)
 #turbine row number
 k = 10
 
@@ -206,7 +206,7 @@ wake_span = np.linspace(-2*198, 2*198, 80)
 wake_yslice = np.zeros((10,8,80))
 wake_zslice = np.zeros((10,8,100))
 
-cmap1 = plt.get_cmap('cividis', 8)
+cmap1 = plt.get_cmap('plasma', 8)
 #turbine row number
 k = 10
 
@@ -277,7 +277,7 @@ ax[2,1].set_box_aspect(1/golden_ratio)
 plt.subplots_adjust(wspace=0.4, hspace=0.4)
 
 cbar = fig.colorbar(pcm, ax=ax[0,:])
-cbar.set_label(r'$u$ [ms$^{-1}$]')
+cbar.set_label(r'$u$ [m s$^{-1}$]')
 
 sm = plt.cm.ScalarMappable(cmap=cmap1, norm=plt.Normalize(vmin=2, vmax=9))
 cbar2 = fig.colorbar(sm, ax=ax[1,:], ticks=np.linspace(2.5,8.5,8))
