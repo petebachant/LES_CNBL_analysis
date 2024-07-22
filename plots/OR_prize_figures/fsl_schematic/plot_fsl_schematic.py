@@ -66,18 +66,19 @@ ax.text(9.75, 0.85, r'Farm-scale'+'\n'+r'efficiency $\eta_{FS}$',
          ha='right', va='center', ma='left')
 ax.text(9.75, 0.56, r'Turbine-scale'+'\n'+r'efficiency $\eta_{TS}$',
          ha='right', va='top', ma='left')
-ax.text(20, 0.4, r'$P_{Nishino}$', ha='left', va='bottom', ma='left', c=tab10(0))
+ax.text(20, 0.4, r'$P_{Nishino}/P_{\infty}$', ha='left', va='bottom', ma='left', c=tab10(0))
 ax.text(16.4, 0.85, r'Optimal', ha='center', va='bottom')
 
 left, bottom, width, height = [0.5, 0.5, 0.2, 0.2]
 ax2 = fig.add_axes([left, bottom, width, height])
-f = h5py.File(f'{path}H500-C5-G4/stat_main_first_order.h5', 'r')
-u = f['u']
+#f = h5py.File(f'{path}H500-C5-G4/stat_main_first_order.h5', 'r')
+#u = f['u']
+u = np.load('H500-C5-G4.npy')
 x = 31.25*np.arange(1600)
 y = 21.74*np.arange(1380)
 ax2.set_xlim([25.5,28.5])
 ax2.set_ylim([13,16])
-ax2.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
+ax2.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u,
                     shading='nearest', vmin=2, vmax=8.5, rasterized=True)
 ax2.set_aspect('equal')
 ax2.set_yticks([])
@@ -102,13 +103,14 @@ for i in range(10):
 
 left, bottom, width, height = [0.5, 0.14, 0.2, 0.2]
 ax3 = fig.add_axes([left, bottom, width, height])
-f = h5py.File(f'{path}H500-C5-G4_aligned/stat_main_first_order.h5', 'r')
-u = f['u']
+#f = h5py.File(f'{path}H500-C5-G4_aligned/stat_main_first_order.h5', 'r')
+#u = f['u']
+u = np.load('H500-C5-G4_aligned.npy')
 x = 31.25*np.arange(1600)
 y = 21.74*np.arange(1380)
 ax3.set_xlim([25.5,28.5])
 ax3.set_ylim([13,16])
-ax3.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u[450:1150,340:1050,23].T,
+ax3.pcolormesh(x[450:1150]/1000, y[340:1050]/1000, u,
                     shading='nearest', vmin=2, vmax=8.5, rasterized=True)
 ax3.set_aspect('equal')
 ax3.set_yticks([])

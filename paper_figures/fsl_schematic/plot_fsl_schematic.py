@@ -128,11 +128,11 @@ tab10 = mpl.colormaps['tab10']
 ax.annotate("", xy=(17.5, 0.3175), xytext=(17.5, 0.44), arrowprops=dict(arrowstyle="->"), color=tab10(1), zorder=0)
 ax.annotate("", xy=(17.5, 0.42), xytext=(17.5, 1), arrowprops=dict(arrowstyle="->"), color=tab10(2), zorder=0)
 
-ax.text(11.5, 0.75, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$FSL$',
+ax.text(11.75, 0.8, r'Farm-scale'+'\n'+r'losses'+'\n'+r'$FSL$',
          ha='left', va='top', ma='left')
-ax.text(11.5, 0.42, r'Turbine-scale'+'\n'+r'losses'+'\n'+r'$TSL$', 
+ax.text(11.75, 0.42, r'Turbine-scale'+'\n'+r'losses'+'\n'+r'$TSL$', 
         ha='left', va='top', ma='left')
-ax.text(3, 0.9, r"$C_{p,Nishino}/C_{p,Betz}$" + '\n' +r"($\zeta=38.1$)", ha='left', va='center', ma='left', c=tab10(0))
+ax.text(4, 0.85, r"$C_{p,Nishino}/C_{p,Betz}$" + '\n' +r"($\zeta=38.1$)", ha='left', va='center', ma='left', c=tab10(0))
 
 #plt.tight_layout()
 ax.set_ylim([0, 1.1])
