@@ -18,6 +18,7 @@ conda activate LES_CNBL
 The code to produce all figures is in the folder `/paper_figures'
 
 Calculate farm-averaged wake growth rate (change `path' variable on line 23! Some changes to code is required if you are using the KU Leuven public dataset)
+To run this script you will have to download the required LES h5 data files from https://rdr.kuleuven.be/dataset.xhtml?persistentId=doi:10.48804/LRSENQ
 ```
 calculate_wake_width.py
 ```
