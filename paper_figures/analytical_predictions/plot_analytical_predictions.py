@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
+from sklearn import linear_model
+from sklearn.metrics import r2_score
 
 plt.style.use("../style.mplstyle")
 
@@ -24,32 +26,39 @@ for i in range(40):
 
 tab20 = mpl.colormaps['tab20']
 
-index_mask = [5, 15, 25]
-ax[0].bar(np.arange(3)-0.1, 1-fsl[index_mask], width=0.2, label=r'LES results', color=tab20(2))
-ax[0].bar(np.arange(3)+0.1, 1-fsl_predictions[index_mask], width=0.2, label=r'Analytical model', color=tab20(3))
-ax[0].set_xticks([0,1,2])
-ax[0].set_xticklabels([r'H1000-C5-G4', r'H500-C5-G4', r'H300-C5-G4'], rotation=90)
-ax[0].set_ylabel(r'$\eta_{FS}$ [-]')
-ax[0].set_ylim([0,1.1])
-ax[0].set_title(r'(a)', loc='left')
-ax[0].legend(loc='upper left', ncol=1, frameon=False)
-ax[0].set_box_aspect(1/golden_ratio)
-
 #exclude cases H300-C0-G0 and H150-C0-G0
 index_mask = [i != 20 and i < 30 for i in range(40)]
 
 percentage_error = 100*(fsl[index_mask] - fsl_predictions[index_mask])/(1-fsl[index_mask])
 print("Mean aboslute percentage error (%) ",np.mean(np.abs(percentage_error)))
 
-ax[1].boxplot(percentage_error)
-ax[1].set_xticks([])
-ax[1].set_yticks([-15,-10,-5,0,5,10])
-ax[1].set_xlim([0.85, 1.55])
-ax[1].set_ylabel(r'Percentage error [\%]')
-ax[1].text(1.05, 7.5, r'Overprediction', ha='left', va='center')
-ax[1].text(1.05,-12.5, r'Underprediction', ha='left', va='center')
-ax[1].set_title(r'(b) MAPE 5.68\%', loc='left')
+ax[0].boxplot(percentage_error)
+ax[0].set_xticks([])
+ax[0].set_yticks([-15,-10,-5,0,5,10])
+ax[0].set_xlim([0.85, 1.55])
+ax[0].set_ylabel(r'Percentage error [\%]')
+ax[0].text(1.05, 7.5, r'Overprediction', ha='left', va='center')
+ax[0].text(1.05,-12.5, r'Underprediction', ha='left', va='center')
+ax[0].set_title(r'(a) MAPE 5.68\%', loc='left')
+ax[0].set_box_aspect(1/golden_ratio)
+
+ax[1].plot([0, 1], [0, 1], 'grey', zorder=0)
+ax[1].scatter(fsl[index_mask], fsl_predictions[index_mask], c='b', marker='x', zorder=1)
+ax[1].set_xlim([0.5, 0.75])
+ax[1].set_ylim([0.5, 0.75])
 ax[1].set_box_aspect(1/golden_ratio)
+ax[1].set_title(r'(b)', loc='left')
+ax[1].set_ylabel(r'$\eta_{FS}$ (Prediction)')
+ax[1].set_xlabel(r'$\eta_{FS}$ (LES)')
+
+#fit linear regression to data
+regr = linear_model.LinearRegression()
+regr.fit(fsl[index_mask].reshape(-1, 1), fsl_predictions[index_mask].reshape(-1, 1))
+
+#calculate r2 score
+y_predict = regr.predict(fsl[index_mask].reshape(-1, 1))
+r_squared = r2_score(fsl_predictions[index_mask], y_predict)
+ax[1].text(0.51, 0.74, rf'$R^2={round(r_squared,3)}$', ha='left', va='top')
 
 plt.subplots_adjust(wspace=0.35)
 plt.savefig('KirbyFig17.png', bbox_inches='tight')
