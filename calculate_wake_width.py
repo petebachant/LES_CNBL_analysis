@@ -15,7 +15,7 @@ plt.style.use("plots/style.mplstyle")
 loss_factors = np.genfromtxt('loss_factors.csv', delimiter=',', dtype=None, names=True, encoding=None)
 
 #vertical grid - use cell centered points  
-with open('/mnt/e/LES_data/zmesh','r') as file:       
+with open('/mnt/d/LES_data/zmesh','r') as file:       
     Nz_full     = int(float(file.readline()))   
     N_line = Nz_full+1
     line = N_line*[0]
@@ -32,23 +32,23 @@ y = 21.74*np.arange(1380)
 #create meshgrid
 xg, yg ,zg = np.meshgrid(x, y, z, indexing='ij', sparse=True)
 
-for case_no in range(15,30):
+for case_no in range(15, 30):
 
     case_id = loss_factors[case_no][0]
 
     #load u data
-    f = h5py.File(f'/mnt/e/LES_data/{case_id}/stat_main_first_order.h5', 'r')
+    f = h5py.File(f'/mnt/d/LES_data/{case_id}/stat_main_first_order.h5', 'r')
     u = f['u']
     v = f['v']
 
     #load auxiliary data
-    aux = h5py.File(f'/mnt/e/LES_data/{case_id}/aux_files.h5', 'r')
+    aux = h5py.File(f'/mnt/d/LES_data/{case_id}/aux_files.h5', 'r')
     yaw = aux['yaw']
     time = aux['time']
     yaw = np.mean(yaw[time[:]>75600,:],axis=0)
 
     #load precursor data
-    f = h5py.File(f'/mnt/e/LES_data/{case_id}/stat_precursor_first_order.h5', 'r')
+    f = h5py.File(f'/mnt/d/LES_data/{case_id}/stat_precursor_first_order.h5', 'r')
     u_precursor = f['u']
     u_prec_profile = np.mean(u_precursor[:,:,:100],axis=(0,1))
     interp_u_prec = sp.interp1d(1000*z[:100], u_prec_profile)
@@ -77,6 +77,7 @@ for case_no in range(15,30):
     #array to store wake widths
     sigma = np.zeros((14, 8))
     wake_growth_rate = np.zeros(14)
+    initial_wake_width = np.zeros(14)
 
     #define colormap
     cmap1 = plt.get_cmap('viridis', 8)
@@ -167,6 +168,7 @@ for case_no in range(15,30):
 
         linreg = stats.linregress(wake_distance, sigma[k-2,:])
         wake_growth_rate[k-2] = linreg.slope
+        initial_wake_width[k-2] = linreg.intercept
         plt.figure(4)
         plt.ylim([0.4,1.4])
         plt.plot(wake_distance, linreg.slope*wake_distance + linreg.intercept, c=cmap2(k-2))
@@ -176,7 +178,7 @@ for case_no in range(15,30):
         plt.close(3)
 
     loss_factors[case_no][6] = np.mean(wake_growth_rate)
-    print(loss_factors[case_no][6])
+    loss_factors[case_no][11] = np.mean(initial_wake_width)
     plt.figure(4)
     plt.title(r'$k^*=$'+f"{np.mean(wake_growth_rate):.3}")
     plt.ylabel(r'$\sigma/D$')
