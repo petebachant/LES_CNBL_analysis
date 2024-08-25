@@ -92,7 +92,7 @@ ax[2].set_box_aspect(1/golden_ratio)
 ax[2].set_ylim([0, 1.2])
 ax[2].set_xlim([0, 1.5])
 ax[2].set_ylabel(r'$\eta_w$ [-]')
-ax[2].set_xlabel(r'$\sigma/D_{x_i=10D}$ [-]')
+ax[2].set_xlabel(r'$\left(\sigma/D\right)_{x_i/D=10} $ [-]')
 ax[2].set_title(r'(c)', loc='left')
 
 #fit linear regression to data
