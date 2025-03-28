@@ -50,6 +50,8 @@ stages:
     deps:
       - environment.yml
       - paper_figures/aligned_loss_factors/plot_aligned_loss_factors.py
+      - paper_figures/style.mplstyle
+      - paper_figures/loss_factors.csv
     outs:
       - paper_figures/aligned_loss_factors/fig14.pdf:
           cache: false
