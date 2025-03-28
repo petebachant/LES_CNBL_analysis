@@ -1,0 +1,14 @@
+stages:
+  download-data:
+    cmd: >
+      calkit xenv -n main --
+      python scripts/download_dataset.py
+      --host https://rdr.kuleuven.be/
+      --dataset doi:10.48804/LRSENQ
+      --version 2.0
+      -o LES_data
+    deps:
+      - scripts/download_dataset.py
+    outs:
+      - LES_data:
+          persist: true
