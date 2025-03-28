@@ -12,3 +12,46 @@ stages:
     outs:
       - LES_data:
           persist: true
+  calc-wake-width:
+    cmd: calkit xenv -n main -- python calculate_wake_width.py
+    deps:
+      - calculate_wake_width.py
+      - LES_data
+      - loss_factors.csv
+      - plots/style.mplstyle
+      - environment.yml
+    # TODO: Define outs
+  calc-farm-loss-factors:
+    cmd: calkit xenv -n main -- python calculate_farm_loss_factors.py
+    deps:
+      - calculate_farm_loss_factors.py
+      - environment.yml
+      - LES_data.csv
+      - LES_data
+    outs:
+      - plots/turbine_force.png:
+          cache: false
+      - plots/vertical_velocity_profiles.png:
+          cache: false
+      - loss_factors.csv: # TODO: This is an input too?
+          cache: false
+          persist: true
+  predict-farm-scale-loss:
+    cmd: calkit xenv -n main -- python predict_farm_scale_loss.py
+    deps:
+      - predict_farm_scale_loss.py
+      - environment.yml
+      - LES_data
+      # TODO: loss_factors.csv is also an output of this script?
+  plot-aligned-loss-factors:
+    cmd: >
+      calkit xenv -n main --wdir paper_figures/aligned_loss_factors --
+      python plot_aligned_loss_factors.py
+    deps:
+      - environment.yml
+      - paper_figures/aligned_loss_factors/plot_aligned_loss_factors.py
+    outs:
+      - paper_figures/aligned_loss_factors/fig14.pdf:
+          cache: false
+      - paper_figures/aligned_loss_factors/KirbyFig14.png:
+          cache: false
