@@ -90,5 +90,4 @@ dependencies:
   - xz=5.6.4=h80987f9_1
   - zlib=1.2.13=h18a0788_1
   - zstd=1.5.6=hfb09047_0
-name: /Users/pete/calkit/LES_CNBL_analysis/.conda-env
-prefix: /Users/pete/calkit/LES_CNBL_analysis/.conda-env
+prefix: .conda-envs/main

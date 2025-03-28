@@ -2,4 +2,4 @@ environments:
   main:
     kind: conda
     path: environment.yml
-    prefix: .conda-env
+    prefix: .conda-envs/main
